@@ -203,6 +203,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   public int getNbPills() {
     return nbPills;
   }
+  public void resetNbPills() {this.nbPills = 0;};
 
   private void eatPill(Location location)
   {
@@ -227,6 +228,4 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     String title = "[PacMan in the Multiverse] Current score: " + score;
     gameGrid.setTitle(title);
   }
-
-
 }
