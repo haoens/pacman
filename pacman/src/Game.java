@@ -18,10 +18,10 @@ public class Game extends GameGrid
   protected PacActor pacActor = new PacActor(this);
   private Monster troll = new Monster(this, MonsterType.Troll);
   private Monster tx5 = new Monster(this, MonsterType.TX5);
-
   private ArrayList<Location> pillAndItemLocations = new ArrayList<>();
   private ArrayList<Actor> iceCubes = new ArrayList<>();
   private ArrayList<Actor> goldPieces = new ArrayList<>();
+  private ArrayList<Portal> portals = new ArrayList<>();
   private GameCallback gameCallback;
   private Properties properties;
   private int seed = 30006;
@@ -44,9 +44,8 @@ public class Game extends GameGrid
 
     while(true) {
       //Setup for auto test
-      pacActor.setPropertyMoves(properties.getProperty("PacMan.move"));
       pacActor.setAuto(Boolean.parseBoolean(properties.getProperty("PacMan.isAuto")));
-      loadPillAndItemsLocations();
+      seed = Integer.parseInt(properties.getProperty("seed"));
 
       GGBackground bg = getBg();
       drawGrid(bg);
@@ -108,6 +107,12 @@ public class Game extends GameGrid
         level++;
         pacActor.resetNbPills();
         hasMonsters = false;
+        for(Portal portal : portals){
+          portal.removeSelf();
+        }
+        for(Actor ice : iceCubes){
+          ice.removeSelf();
+        }
       }
     }
     setTitle(title);
@@ -168,25 +173,6 @@ public class Game extends GameGrid
     return pillAndItemLocations;
   }
 
-  private void loadPillAndItemsLocations() {
-    String pillsLocationString = properties.getProperty("Pills.location");
-    if (pillsLocationString != null) {
-      String[] singlePillLocationStrings = pillsLocationString.split(";");
-      for (String singlePillLocationString: singlePillLocationStrings) {
-        String[] locationStrings = singlePillLocationString.split(",");
-        propertyPillLocations.add(new Location(Integer.parseInt(locationStrings[0]), Integer.parseInt(locationStrings[1])));
-      }
-    }
-
-    String goldLocationString = properties.getProperty("Gold.location");
-    if (goldLocationString != null) {
-      String[] singleGoldLocationStrings = goldLocationString.split(";");
-      for (String singleGoldLocationString: singleGoldLocationStrings) {
-        String[] locationStrings = singleGoldLocationString.split(",");
-        propertyGoldLocations.add(new Location(Integer.parseInt(locationStrings[0]), Integer.parseInt(locationStrings[1])));
-      }
-    }
-  }
   private void setupPillAndItemsLocations() {
     for (int y = 0; y < nbVertCells; y++)
     {
@@ -237,6 +223,8 @@ public class Game extends GameGrid
           putGold(bg, location);
         } else if (a == 4) {
           putIce(bg, location);
+        } else if (a >= 8 && a <= 11) {
+          putPortal(location, a);
         }
       }
     }
@@ -269,6 +257,40 @@ public class Game extends GameGrid
     addActor(ice, location);
   }
 
+  private void putPortal(Location location, int index) {
+    // Need to set paired portal when possible
+    Portal portal = null;
+    switch (index) {
+      case 8 -> {
+        portal = new Portal("sprites/portalDarkGoldTile.png", index);
+        checkPortalPair(portal, index);
+      }
+      case 9 -> {
+        portal = new Portal("sprites/portalDarkGrayTile.png", index);
+        checkPortalPair(portal, index);
+      }
+      case 10 -> {
+        portal = new Portal("sprites/portalWhiteTile.png", index);
+        checkPortalPair(portal, index);
+      }
+      case 11 -> {
+        portal = new Portal("sprites/portalYellowTile.png", index);
+        checkPortalPair(portal, index);
+      }
+    }
+    this.portals.add(portal);
+    addActor(portal, location);
+  }
+
+  private void checkPortalPair(Portal portal, int index) {
+    for(Portal otherPortal : portals) {
+      if (portal.getIndex() == index) {
+        portal.setPairedPortal(otherPortal);
+        otherPortal.setPairedPortal(portal);
+      }
+    }
+  }
+
   public void removeItem(String type,Location location){
     if(type.equals("gold")){
       for (Actor item : this.goldPieces){
@@ -291,6 +313,9 @@ public class Game extends GameGrid
   }
   public int getNumVertCells(){
     return this.nbVertCells;
+  }
+  public ArrayList<Portal> getPortals() {
+    return this.portals;
   }
   public int getCurrentLevel() {
     if (level < grid.getMazeArraySize()) {

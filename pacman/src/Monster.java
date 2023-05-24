@@ -72,6 +72,7 @@ public class Monster extends Actor
     if (type == MonsterType.TX5 &&
       !isVisited(next) && canMove(next))
     {
+      next = portalCheck(next);
       setLocation(next);
     }
     else
@@ -83,6 +84,7 @@ public class Monster extends Actor
       next = getNextMoveLocation();
       if (canMove(next))
       {
+        next = portalCheck(next);
         setLocation(next);
       }
       else
@@ -91,6 +93,7 @@ public class Monster extends Actor
         next = getNextMoveLocation();
         if (canMove(next)) // Try to move forward
         {
+          next = portalCheck(next);
           setLocation(next);
         }
         else
@@ -100,6 +103,7 @@ public class Monster extends Actor
           next = getNextMoveLocation();
           if (canMove(next))
           {
+            next = portalCheck(next);
             setLocation(next);
           }
           else
@@ -108,6 +112,7 @@ public class Monster extends Actor
             setDirection(oldDirection);
             turn(180);  // Turn backward
             next = getNextMoveLocation();
+            next = portalCheck(next);
             setLocation(next);
           }
         }
@@ -144,5 +149,18 @@ public class Monster extends Actor
       return false;
     else
       return true;
+  }
+
+  private Location portalCheck(Location next){
+    int cellID = game.grid.getCell(next, game.getCurrentLevel());
+    if(8 <= cellID && cellID <= 11) {
+      for (Portal portal : game.getPortals()) {
+        if (portal.getLocation().equals(next)) {
+          next = portal.getPairedPortal().getLocation();
+          break;
+        }
+      }
+    }
+    return next;
   }
 }

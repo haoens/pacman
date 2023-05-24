@@ -6,7 +6,6 @@ import ch.aplu.jgamegrid.*;
 import java.awt.event.KeyEvent;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -18,8 +17,6 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private int score = 0;
   private Game game;
   private ArrayList<Location> visitedList = new ArrayList<>();
-  private List<String> propertyMoves = new ArrayList<>();
-  private int propertyMoveIndex = 0;
   private final int listLength = 10;
   private int seed;
   private Random randomiser = new Random();
@@ -38,12 +35,6 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   public void setSeed(int seed) {
     this.seed = seed;
     randomiser.setSeed(seed);
-  }
-
-  public void setPropertyMoves(String propertyMoveString) {
-    if (propertyMoveString != null) {
-      this.propertyMoves = Arrays.asList(propertyMoveString.split(","));
-    }
   }
 
   public void keyRepeated(int keyCode)
@@ -75,6 +66,15 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     }
     if (next != null && canMove(next))
     {
+      int cellID = game.grid.getCell(next, game.getCurrentLevel());
+      if(8 <= cellID && cellID <= 11) {
+        for (Portal portal : game.getPortals()) {
+          if (portal.getLocation().equals(next)) {
+            next = portal.getPairedPortal().getLocation();
+            break;
+          }
+        }
+      }
       setLocation(next);
       eatPill(next);
     }
@@ -108,31 +108,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     return currentLocation;
   }
 
-  private void followPropertyMoves() {
-    String currentMove = propertyMoves.get(propertyMoveIndex);
-    switch(currentMove) {
-      case "R":
-        turn(90);
-        break;
-      case "L":
-        turn(-90);
-        break;
-      case "M":
-        Location next = getNextMoveLocation();
-        if (canMove(next)) {
-          setLocation(next);
-          eatPill(next);
-        }
-        break;
-    }
-    propertyMoveIndex++;
-  }
-
   private void moveInAutoMode() {
-    if (propertyMoves.size() > propertyMoveIndex) {
-      followPropertyMoves();
-      return;
-    }
     Location closestPill = closestPillLocation();
     double oldDirection = getDirection();
 
