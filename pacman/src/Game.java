@@ -19,8 +19,10 @@ public class Game extends GameGrid
   protected PacManGameGrid grid;
 
   protected PacActor pacActor = new PacActor(this);
-  private Monster troll = new Monster(this, MonsterType.Troll);
-  private Monster tx5 = new Monster(this, MonsterType.TX5);
+
+  private ArrayList<Monster> trollArray = new ArrayList<>();
+
+  private ArrayList<Monster> tx5Array = new ArrayList<>();
   private ArrayList<Location> pillAndItemLocations = new ArrayList<>();
   private ArrayList<Actor> iceCubes = new ArrayList<>();
   private ArrayList<Actor> goldPieces = new ArrayList<>();
@@ -30,11 +32,13 @@ public class Game extends GameGrid
   private int seed = 30006;
   private ArrayList<Location> propertyPillLocations = new ArrayList<>();
   private ArrayList<Location> propertyGoldLocations = new ArrayList<>();
-  private int level = 0;
-  private boolean hasMonsters = false;
 
   // added attributes
   private boolean failedChecking = false;
+  private int level = 0;
+  private boolean hasMonsters = false;
+  private int tx5Index = 0;
+  private int trollIndex = 0;
 
   public Game(GameCallback gameCallback, Properties properties, String filepath)
   {
@@ -65,17 +69,34 @@ public class Game extends GameGrid
       GGBackground bg = getBg();
       drawGrid(bg);
 
+      // Initialize the needed amount of tx5 and Troll.
+      for (int i = 0; i < grid.getNumTroll(level); i++) {
+        trollArray.add(new Monster(this, MonsterType.Troll));
+      }
+      for (int i = 0; i < grid.getNumTx5(level); i++) {
+        tx5Array.add(new Monster(this, MonsterType.TX5));
+      }
+
       //Setup Random seeds
       seed = Integer.parseInt(properties.getProperty("seed"));
       pacActor.setSeed(seed);
-      troll.setSeed(seed);
-      tx5.setSeed(seed);
+
+      for (Monster value : trollArray) {
+        value.setSeed(seed);
+        value.setSlowDown(3);
+      }
+      for (Monster monster : tx5Array) {
+        monster.setSeed(seed);
+        monster.setSlowDown(3);
+        monster.stopMoving(5);
+      }
 
       setKeyRepeatPeriod(150);
-      troll.setSlowDown(3);
-      tx5.setSlowDown(3);
+
+      //troll.setSlowDown(3);
+      //tx5.setSlowDown(3);
       pacActor.setSlowDown(3);
-      tx5.stopMoving(5);
+      //tx5.stopMoving(5);
       setupActorLocations();
 
       //Run the game
@@ -83,15 +104,27 @@ public class Game extends GameGrid
       show();
       // Loop to look for collision in the application thread
       // This makes it improbable that we miss a hit
-      boolean hasPacmanBeenHit;
+      boolean hasPacmanBeenHit = false;
       boolean hasPacmanEatAllPills;
       setupPillAndItemsLocations();
       int maxPillsAndItems = countPillsAndItems();
 
       do {
         if (hasMonsters) {
-          hasPacmanBeenHit = troll.getLocation().equals(pacActor.getLocation()) ||
-                  tx5.getLocation().equals(pacActor.getLocation());
+          for (Monster monster : trollArray) {
+            hasPacmanBeenHit = monster.getLocation().equals(pacActor.getLocation());
+            if (hasPacmanBeenHit) {
+              break;
+            }
+          }
+          if (!hasPacmanBeenHit) {
+            for (Monster monster : tx5Array) {
+              hasPacmanBeenHit = monster.getLocation().equals(pacActor.getLocation());
+              if (hasPacmanBeenHit) {
+                break;
+              }
+            }
+          }
         } else {
           hasPacmanBeenHit = false;
         }
@@ -101,12 +134,22 @@ public class Game extends GameGrid
       delay(120);
 
       Location loc = pacActor.getLocation();
-      troll.setStopMoving(true);
-      tx5.setStopMoving(true);
-      pacActor.removeSelf();
-      troll.removeSelf();
-      tx5.removeSelf();
 
+      for (Monster value : trollArray) {
+        value.setStopMoving(true);
+        value.removeSelf();
+      }
+
+      for (Monster monster : tx5Array) {
+        monster.setStopMoving(true);
+        monster.removeSelf();
+      }
+      //troll.setStopMoving(true);
+      //tx5.setStopMoving(true);
+      //pacActor.removeSelf();
+      //troll.removeSelf();
+      //tx5.removeSelf();
+      pacActor.removeSelf();
       if (hasPacmanBeenHit) {
         bg.setPaintColor(Color.red);
         title = "GAME OVER";
@@ -121,6 +164,10 @@ public class Game extends GameGrid
       else {
         level++;
         pacActor.resetNbPills();
+        trollIndex = 0;
+        trollArray.clear();
+        tx5Index= 0;
+        tx5Array.clear();
         hasMonsters = false;
       }
     }
@@ -142,11 +189,13 @@ public class Game extends GameGrid
           addActor(pacActor, location);
         }
         if (grid.getCell(location, getCurrentLevel()) == 6) {
-          addActor(troll, location, Location.NORTH);
+          addActor(trollArray.get(trollIndex), location, Location.NORTH);
+          trollIndex++;
           hasMonsters = true;
         }
         if (grid.getCell(location, getCurrentLevel()) == 7) {
-          addActor(tx5, location, Location.NORTH);
+          addActor(tx5Array.get(tx5Index), location, Location.NORTH);
+          tx5Index++;
           hasMonsters = true;
         }
       }

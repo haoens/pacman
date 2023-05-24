@@ -178,4 +178,28 @@ public class PacManGameGrid
     public int[][] getNthMazeArray(int index) {
         return mazeArray.get(index);
     }
+
+    public int getNumTx5(int level) {
+        int count = 0;
+        for (int i = 0; i < nbVertCells; i++) {
+            for (int j = 0; j < nbHorzCells; j++) {
+                if (mazeArray.get(level)[i][j] == 7) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    public int getNumTroll(int level) {
+        int count = 0;
+        for (int i = 0; i < nbVertCells; i++) {
+            for (int j = 0; j < nbHorzCells; j++) {
+                if (mazeArray.get(level)[i][j] == 6) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
 }
