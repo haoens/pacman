@@ -10,9 +10,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Properties;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -30,6 +30,11 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import src.Game;
+import src.utility.GameCallback;
+import src.utility.PropertiesLoader;
+
+import torusverse.LevelChecker;
 /**
  * Controller of the application.
  * 
@@ -51,17 +56,25 @@ public class Controller implements ActionListener, GUIInformation {
 	private List<Tile> tiles;
 
 	private GridView grid;
-	private View view;
+	public View view;
 
 	private int gridWith = Constants.MAP_WIDTH;
 	private int gridHeight = Constants.MAP_HEIGHT;
+
+//	Added attributes
+	private String currMap = null;
 
 	/**
 	 * Construct the controller.
 	 */
 	public Controller() {
 		init(Constants.MAP_WIDTH, Constants.MAP_HEIGHT);
+	}
 
+	public Controller(String mapDir) {
+		this();
+		currMap = mapDir;
+		load_map();
 	}
 
 	public void init(int width, int height) {
@@ -96,7 +109,22 @@ public class Controller implements ActionListener, GUIInformation {
 			loadFile();
 		} else if (e.getActionCommand().equals("update")) {
 			updateGrid(gridWith, gridHeight);
+		} else if (e.getActionCommand().equals("start_game")) {
+//			To-do: start game
+			SwingWorker worker = new SwingWorker<Game, Void>() {
+				@Override
+				public Game doInBackground() {
+					GameCallback gameCallback = new GameCallback();
+					String propertiesPath =  "pacman/properties/test2.properties";
+					final Properties properties = PropertiesLoader.loadPropertiesFile(propertiesPath);
+					Game game = new Game(gameCallback, properties, currMap);
+					return game;
+				}
+			};
+
+			worker.execute();
 		}
+
 	}
 
 	public void updateGrid(int width, int height) {
@@ -204,10 +232,12 @@ public class Controller implements ActionListener, GUIInformation {
 			chooser.setCurrentDirectory(workingDirectory);
 
 			int returnVal = chooser.showOpenDialog(null);
+
 			Document document;
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				selectedFile = chooser.getSelectedFile();
 				if (selectedFile.canRead() && selectedFile.exists()) {
+					currMap = selectedFile.getPath();
 					document = (Document) builder.build(selectedFile);
 
 					Element rootNode = document.getRootElement();
@@ -261,7 +291,8 @@ public class Controller implements ActionListener, GUIInformation {
 						}
 					}
 
-					String mapString = model.getMapAsString();
+					LevelChecker levelChecker = new LevelChecker(model.getMap());
+					levelChecker.checkLevel();
 					grid.redrawGrid();
 				}
 			}
@@ -277,4 +308,86 @@ public class Controller implements ActionListener, GUIInformation {
 	public Tile getSelectedTile() {
 		return selectedTile;
 	}
+
+
+	// Self added functions
+	public void load_map() {
+		SAXBuilder builder = new SAXBuilder();
+		try {
+			File selectedFile;
+			Document document;
+			if (currMap == null) return ;
+			selectedFile = new File(currMap);
+			if (selectedFile.canRead() && selectedFile.exists()) {
+				document = (Document) builder.build(selectedFile);
+
+				Element rootNode = document.getRootElement();
+
+				List sizeList = rootNode.getChildren("size");
+				Element sizeElem = (Element) sizeList.get(0);
+				int height = Integer.parseInt(sizeElem
+						.getChildText("height"));
+				int width = Integer
+						.parseInt(sizeElem.getChildText("width"));
+				char map[][] = new char[height][width];
+
+				List rows = rootNode.getChildren("row");
+				for (int y = 0; y < rows.size(); y++) {
+					Element cellsElem = (Element) rows.get(y);
+					List cells = cellsElem.getChildren("cell");
+
+					for (int x = 0; x < cells.size(); x++) {
+						Element cell = (Element) cells.get(x);
+						String cellValue = cell.getText();
+
+						char tileNr = 'a';
+						if (cellValue.equals("PathTile"))
+							tileNr = 'a';
+						else if (cellValue.equals("WallTile"))
+							tileNr = 'b';
+						else if (cellValue.equals("PillTile"))
+							tileNr = 'c';
+						else if (cellValue.equals("GoldTile"))
+							tileNr = 'd';
+						else if (cellValue.equals("IceTile"))
+							tileNr = 'e';
+						else if (cellValue.equals("PacTile"))
+							tileNr = 'f';
+						else if (cellValue.equals("TrollTile"))
+							tileNr = 'g';
+						else if (cellValue.equals("TX5Tile"))
+							tileNr = 'h';
+						else if (cellValue.equals("PortalWhiteTile"))
+							tileNr = 'i';
+						else if (cellValue.equals("PortalYellowTile"))
+							tileNr = 'j';
+						else if (cellValue.equals("PortalDarkGoldTile"))
+							tileNr = 'k';
+						else if (cellValue.equals("PortalDarkGrayTile"))
+							tileNr = 'l';
+						else
+							tileNr = '0';
+
+						map[y][x] = tileNr;
+						model.setTile(x, y, tileNr);
+					}
+				}
+				grid.redrawGrid();
+				LevelChecker levelChecker = new LevelChecker(model.getMap());
+				levelChecker.checkLevel();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void display_map(char[][] map){
+		for (int x = 0; x < map.length; x++) {
+			for (int y = 0; y < map[0].length; y++) {
+				System.out.print(map[x][y]);
+			}
+			System.out.println();
+		}
+	}
+
 }

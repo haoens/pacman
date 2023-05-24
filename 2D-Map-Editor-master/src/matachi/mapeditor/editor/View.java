@@ -84,6 +84,10 @@ public class View {
 		loadButton.addActionListener(controller);
 		loadButton.setActionCommand("load");
 
+		JButton startGameButton = new JButton("Start Game");
+		startGameButton.addActionListener(controller);
+		startGameButton.setActionCommand("start_game");
+
 		JPanel right = new JPanel();
 		right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
 		Border border = BorderFactory.createEmptyBorder(10, 10, 10, 10);
@@ -91,6 +95,7 @@ public class View {
 		// right.add(showGridButton);
 		right.add(saveButton);
 		right.add(loadButton);
+		right.add(startGameButton);
 
 		/** The top panel, that shows coordinates and stuff. */
 		CameraInformationLabel cameraInformationLabel = new CameraInformationLabel(
@@ -162,6 +167,19 @@ public class View {
 
 	public void close() {
 		frame.setVisible(false);
+	}
+
+//	Added
+	public void show() {
+		frame.setVisible(true);
+	}
+
+	public void setFrame(JFrame frame){
+		this.frame = frame;
+	}
+
+	public JFrame getFrame() {
+		return frame;
 	}
 	// /**
 	// * Flip the grid on or off.
