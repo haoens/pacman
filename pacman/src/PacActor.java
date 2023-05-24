@@ -17,7 +17,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private int nbPills = 0;
   private int score = 0;
   private Game game;
-  private ArrayList<Location> visitedList = new ArrayList<Location>();
+  private ArrayList<Location> visitedList = new ArrayList<>();
   private List<String> propertyMoves = new ArrayList<>();
   private int propertyMoveIndex = 0;
   private final int listLength = 10;
@@ -203,7 +203,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   public int getNbPills() {
     return nbPills;
   }
-  public void resetNbPills() {this.nbPills = 0;};
+  public void resetNbPills() {this.nbPills = 0;}
 
   private void eatPill(Location location)
   {

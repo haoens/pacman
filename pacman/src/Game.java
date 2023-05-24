@@ -19,9 +19,9 @@ public class Game extends GameGrid
   private Monster troll = new Monster(this, MonsterType.Troll);
   private Monster tx5 = new Monster(this, MonsterType.TX5);
 
-  private ArrayList<Location> pillAndItemLocations = new ArrayList<Location>();
-  private ArrayList<Actor> iceCubes = new ArrayList<Actor>();
-  private ArrayList<Actor> goldPieces = new ArrayList<Actor>();
+  private ArrayList<Location> pillAndItemLocations = new ArrayList<>();
+  private ArrayList<Actor> iceCubes = new ArrayList<>();
+  private ArrayList<Actor> goldPieces = new ArrayList<>();
   private GameCallback gameCallback;
   private Properties properties;
   private int seed = 30006;

@@ -22,11 +22,11 @@ public class PacManGameGrid
     this.nbVertCells = nbVertCells;
 
     // Do Game Check.
-    if (gameCheck(getGameFolderContent("pacman/gameFolder")) == true) {
+    if (gameCheck(getGameFolderContent("pacman/gameFolder"))) {
 
       // Pass game check load xml to maze array
       mazeArray = xmlToMazeArray(sortGameFolder(getGameFolderContent("pacman/gameFolder")));
-    };
+    }
   }
 
   public int getCell(Location location, int level)
@@ -65,8 +65,7 @@ public class PacManGameGrid
 
   private File[] getGameFolderContent(String gameFolder) {
     File folder = new File(gameFolder);
-    File[] listOfFiles = folder.listFiles();
-    return listOfFiles;
+    return folder.listFiles();
   }
 
   // Turns XML to MazeArray of Integer values.
@@ -74,12 +73,11 @@ public class PacManGameGrid
     ArrayList<int[][]> mazeArray = new ArrayList<>();
 
     try {
-      for (int i = 0; i < gameFolder.size(); i++) {
+      for (File file : gameFolder) {
         int[][] mazeArrayTemp = new int[nbVertCells][nbHorzCells];
-        File inputFile = gameFolder.get(i);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(inputFile);
+        Document doc = dBuilder.parse(file);
 
         NodeList nList = doc.getElementsByTagName("row");
 
@@ -104,17 +102,16 @@ public class PacManGameGrid
   // Sort files in gameFolder by leading numbers only.
   private ArrayList<File> sortGameFolder(File[] gameFolder) {
 
-    Map<Integer, File> treeMap = new TreeMap<Integer, File>();
+    Map<Integer, File> treeMap = new TreeMap<>();
 
-    for (int i = 0; i < gameFolder.length; i++) {
-      treeMap.put(getFileNum(gameFolder[i].getName()), gameFolder[i]);
+    for (File file : gameFolder) {
+      treeMap.put(getFileNum(file.getName()), file);
     }
-    ArrayList<File> sortedGameFolder = new ArrayList(treeMap.values());
 
 //    for (int i = 0; i < sortedGameFolder.size(); i++) {
 //      System.out.println(sortedGameFolder.get(i));
 //    }
-    return sortedGameFolder;
+    return new ArrayList<>(treeMap.values());
   }
 
   // Get the starting number of a file.
@@ -143,21 +140,20 @@ public class PacManGameGrid
       return false;
     }
     // Checks if all files start with a digit.
-    for (int i = 0; i < gameFolder.length; i++) {
-      if (!Character.isDigit(gameFolder[i].getName().charAt(0))) {
+    for (File file : gameFolder) {
+      if (!Character.isDigit(file.getName().charAt(0))) {
         System.out.println("not starting with digit");
         return false;
       }
     }
     // Checks if there are more than two files with same digits.
     HashSet<Integer> hashSet = new HashSet<>();
-    for (int i = 0; i < gameFolder.length; i++) {
-      if (hashSet.contains(getFileNum(gameFolder[i].getName()))) {
+    for (File file : gameFolder) {
+      if (hashSet.contains(getFileNum(file.getName()))) {
         System.out.println("duplicate digit present");
         return false;
-      }
-      else {
-        hashSet.add(getFileNum(gameFolder[i].getName()));
+      } else {
+        hashSet.add(getFileNum(file.getName()));
       }
     }
     return true;
