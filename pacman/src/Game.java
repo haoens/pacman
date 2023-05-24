@@ -4,8 +4,11 @@ package src;
 
 import ch.aplu.jgamegrid.*;
 import src.utility.GameCallback;
+import torusverse.LevelChecker;
 
+import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -13,7 +16,7 @@ public class Game extends GameGrid
 {
   private final static int nbHorzCells = 20;
   private final static int nbVertCells = 11;
-  protected PacManGameGrid grid = new PacManGameGrid(nbHorzCells, nbVertCells);
+  protected PacManGameGrid grid;
 
   protected PacActor pacActor = new PacActor(this);
   private Monster troll = new Monster(this, MonsterType.Troll);
@@ -30,19 +33,31 @@ public class Game extends GameGrid
   private int level = 0;
   private boolean hasMonsters = false;
 
-  public Game(GameCallback gameCallback, Properties properties)
+  // added attributes
+  private boolean failedChecking = false;
+
+  public Game(GameCallback gameCallback, Properties properties, String filepath)
   {
 
     //Setup game
     super(nbHorzCells, nbVertCells, 20, false);
     this.gameCallback = gameCallback;
     this.properties = properties;
+    this.grid = new PacManGameGrid(nbHorzCells, nbVertCells, filepath);
     setSimulationPeriod(100);
     setTitle("[PacMan in the Multiverse]");
     String title = "";
     addKeyRepeatListener(pacActor);
 
     while(true) {
+      //Do Level Check before test
+      LevelChecker levelChecker = new LevelChecker(grid.getNthMazeArray(level));
+      if (!levelChecker.checkLevel()){
+        failedChecking = true;
+        System.out.println("Failed");
+        break;
+      }
+
       //Setup for auto test
       pacActor.setAuto(Boolean.parseBoolean(properties.getProperty("PacMan.isAuto")));
       seed = Integer.parseInt(properties.getProperty("seed"));
@@ -107,16 +122,11 @@ public class Game extends GameGrid
         level++;
         pacActor.resetNbPills();
         hasMonsters = false;
-        for(Portal portal : portals){
-          portal.removeSelf();
-        }
-        for(Actor ice : iceCubes){
-          ice.removeSelf();
-        }
       }
     }
     setTitle(title);
     gameCallback.endOfGame(title);
+    getFrame().dispose();
     doPause();
   }
 
@@ -323,7 +333,10 @@ public class Game extends GameGrid
     }
     return -1;
   }
-  private boolean lastLevel() {
+  public boolean lastLevel() {
     return getCurrentLevel() == grid.getMazeArraySize()-1;
   }
+
+  public PacManGameGrid getGrid() { return grid; }
+  public boolean hasFailedChecking() { return failedChecking; }
 }
