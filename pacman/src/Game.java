@@ -69,6 +69,9 @@ public class Game extends GameGrid
       GGBackground bg = getBg();
       drawGrid(bg);
 
+      pacActor.setGrid();
+      pacActor.getItemLocations();
+
       // Initialize the needed amount of tx5 and Troll.
       for (int i = 0; i < grid.getNumTroll(level); i++) {
         trollArray.add(new Monster(this, MonsterType.Troll));
@@ -169,6 +172,13 @@ public class Game extends GameGrid
         tx5Index= 0;
         tx5Array.clear();
         hasMonsters = false;
+        for(Actor ice : iceCubes) {
+          ice.removeSelf();
+        }
+        for(Portal portal : portals) {
+          portal.removeSelf();
+        }
+        pillAndItemLocations.clear();
       }
     }
     setTitle(title);

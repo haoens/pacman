@@ -3,6 +3,9 @@
 package src;
 
 import ch.aplu.jgamegrid.*;
+import src.pathfinding.Grid;
+import src.pathfinding.PathFinding;
+
 import java.awt.event.KeyEvent;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -16,8 +19,10 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private int nbPills = 0;
   private int score = 0;
   private Game game;
-  private ArrayList<Location> visitedList = new ArrayList<>();
-  private final int listLength = 10;
+  private Grid grid;
+  private ArrayList<List<Location>> itemPaths = new ArrayList<>();
+  private List<Location> itemLocations;
+  private List<Location> currentPath;
   private int seed;
   private Random randomiser = new Random();
   public PacActor(Game game)
@@ -93,77 +98,44 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     this.game.getGameCallback().pacManLocationChanged(getLocation(), score, nbPills);
   }
 
-  private Location closestPillLocation() {
-    int currentDistance = 1000;
-    Location currentLocation = null;
-    List<Location> pillAndItemLocations = game.getPillAndItemLocations();
-    for (Location location: pillAndItemLocations) {
-      int distanceToPill = location.getDistanceTo(getLocation());
-      if (distanceToPill < currentDistance) {
-        currentLocation = location;
-        currentDistance = distanceToPill;
-      }
-    }
-
-    return currentLocation;
-  }
-
   private void moveInAutoMode() {
-    Location closestPill = closestPillLocation();
-    double oldDirection = getDirection();
-
-    Location.CompassDirection compassDir =
-            getLocation().get4CompassDirectionTo(closestPill);
-    Location next = getLocation().getNeighbourLocation(compassDir);
-    setDirection(compassDir);
-    if (!isVisited(next) && canMove(next)) {
-      setLocation(next);
-    } else {
-      // normal movement
-      int sign = randomiser.nextDouble() < 0.5 ? 1 : -1;
-      setDirection(oldDirection);
-      turn(sign * 90);  // Try to turn left/right
-      next = getNextMoveLocation();
-      if (canMove(next)) {
-        setLocation(next);
-      } else {
-        setDirection(oldDirection);
-        next = getNextMoveLocation();
-        if (canMove(next)) // Try to move forward
-        {
-          setLocation(next);
-        } else {
-          setDirection(oldDirection);
-          turn(-sign * 90);  // Try to turn right/left
-          next = getNextMoveLocation();
-          if (canMove(next)) {
-            setLocation(next);
-          } else {
-            setDirection(oldDirection);
-            turn(180);  // Turn backward
-            next = getNextMoveLocation();
-            setLocation(next);
-          }
+    if(itemPaths.isEmpty()) {
+      for(Location itemLocation : itemLocations) {
+        if(game.grid.getCell(itemLocation, game.getCurrentLevel()) == 4) {
+          continue;
+        }
+        if(itemLocation.equals(this.getLocation())) {
+          continue;
+        }
+        if((itemLocation.x == this.getLocation().getX() || itemLocation.y == this.getLocation().getY())
+            && itemLocation.getDistanceTo(this.getLocation()) == 1){
+          List<Location> itemPath = new ArrayList<>();
+          itemPath.add(itemLocation);
+          itemPaths.add(itemPath);
+          break;
+        }
+        itemPaths.add(PathFinding.findPath(grid, this.getLocation(), itemLocation, false, game));
+      }
+      int shortestPath = 9000;
+      for(List<Location> itemPath : itemPaths) {
+        if(itemPath.size() < shortestPath){
+          currentPath = itemPath;
+          shortestPath = itemPath.size();
         }
       }
     }
+    Location next = currentPath.remove(0);
+    setLocation(next);
     eatPill(next);
-    addVisitedList(next);
-  }
-
-  private void addVisitedList(Location location)
-  {
-    visitedList.add(location);
-    if (visitedList.size() == listLength)
-      visitedList.remove(0);
-  }
-
-  private boolean isVisited(Location location)
-  {
-    for (Location loc : visitedList)
-      if (loc.equals(location))
-        return true;
-    return false;
+    if(currentPath.size() == 0) {
+      itemPaths.clear();
+      for(Location itemLocation : itemLocations){
+        if(itemLocation.equals(next)) {
+          itemLocations.remove(itemLocation);
+          break;
+        }
+      }
+    }
   }
 
   private boolean canMove(Location location)
@@ -204,4 +176,23 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     String title = "[PacMan in the Multiverse] Current score: " + score;
     gameGrid.setTitle(title);
   }
+
+  public void setGrid(){
+    int gridWidth = game.getNumHorzCells();
+    int gridHeight = game.getNumVertCells();
+    boolean[][] walkableTiles = new boolean[gridWidth][gridHeight];
+    for(int i = 0; i < gridWidth; i++) {
+      for(int j = 0; j < gridHeight; j ++) {
+        if(game.getGrid().getCell(new Location(i, j), game.getCurrentLevel()) > 0) {
+          walkableTiles[i][j] = true;
+        }
+      }
+    }
+    this.grid = new Grid(gridWidth, gridHeight, walkableTiles);
+  }
+  public void getItemLocations() {
+    this.itemLocations = game.getPillAndItemLocations();
+  }
 }
+
+
