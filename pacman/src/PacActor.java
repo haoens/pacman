@@ -24,16 +24,20 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private List<Location> itemLocations;
   private List<Location> currentPath;
   private int seed;
+  private boolean isAuto = false;
   private Random randomiser = new Random();
   public PacActor(Game game)
   {
     super(true, "sprites/pacpix.gif", nbSprites);  // Rotatable
     this.game = game;
   }
-  private boolean isAuto = false;
 
   public void setAuto(boolean auto) {
     isAuto = auto;
+  }
+
+  public boolean getAuto(){
+    return isAuto;
   }
 
 
@@ -114,7 +118,8 @@ public class PacActor extends Actor implements GGKeyRepeatListener
           itemPaths.add(itemPath);
           break;
         }
-        itemPaths.add(PathFinding.findPath(grid, this.getLocation(), itemLocation, false, game));
+        ArrayList<Portal> portals = game.getPortals();
+        itemPaths.add(PathFinding.findPath(grid, this.getLocation(), itemLocation, false, portals));
       }
       int shortestPath = 9000;
       for(List<Location> itemPath : itemPaths) {
@@ -125,6 +130,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
       }
     }
     Location next = currentPath.remove(0);
+    setDirection(this.getLocation().get4CompassDirectionTo(next));
     setLocation(next);
     eatPill(next);
     if(currentPath.size() == 0) {

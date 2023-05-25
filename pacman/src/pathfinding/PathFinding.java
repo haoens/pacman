@@ -2,6 +2,7 @@ package src.pathfinding;
 
 import ch.aplu.jgamegrid.Location;
 import src.Game;
+import src.Portal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,12 +22,12 @@ public class PathFinding {
      * @param startPos       starting position.
      * @param targetPos      ending position.
      * @param allowDiagonals Pass true if you want 8 directional pathfinding, false for 4 direcitonal
-     * @param game
+     * @param portals
      * @return
      */
-    public static List<Location> findPath(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, Game game) {
+    public static List<Location> findPath(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, ArrayList<Portal> portals) {
         // Find path
-        List<Node> pathInNodes = findPathNodes(grid, startPos, targetPos, allowDiagonals, game);
+        List<Node> pathInNodes = findPathNodes(grid, startPos, targetPos, allowDiagonals, portals);
 
         // Convert to a list of points and return
         List<Location> pathInPoints = new ArrayList<>();
@@ -46,10 +47,10 @@ public class PathFinding {
      * @param startPos       Starting position.
      * @param targetPos      Targeted position.
      * @param allowDiagonals Pass true if you want 8 directional pathfinding, false for 4 direcitonal
-     * @param game
+     * @param portals
      * @return List of Node's with found path.
      */
-    private static List<Node> findPathNodes(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, Game game) {
+    private static List<Node> findPathNodes(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, ArrayList<Portal> portals) {
         Node startNode = grid.nodes[startPos.x][startPos.y];
         Node targetNode = grid.nodes[targetPos.x][targetPos.y];
 
@@ -78,7 +79,7 @@ public class PathFinding {
 
             List<Node> neighbours;
             if (allowDiagonals) neighbours = grid.get8Neighbours(currentNode);
-            else neighbours = grid.get4Neighbours(currentNode, game);
+            else neighbours = grid.get4Neighbours(currentNode, portals);
 
             for (Node neighbour : neighbours) {
                 if (!neighbour.walkable || closedSet.contains(neighbour)) continue;

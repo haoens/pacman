@@ -1,7 +1,6 @@
 package src.pathfinding;
 
 import ch.aplu.jgamegrid.Location;
-import src.Game;
 import src.Portal;
 
 import java.util.ArrayList;
@@ -73,9 +72,8 @@ public class Grid {
         return neighbours;
     }
 
-    public List<Node> get4Neighbours(Node node, Game game) {
+    public List<Node> get4Neighbours(Node node, ArrayList<Portal> portals) {
         List<Node> neighbours = new ArrayList<>();
-        ArrayList<Portal> portals = game.getPortals();
         boolean addedPortal = false;
 
         if (node.y + 1 >= 0 && node.y + 1  < gridHeight) {
