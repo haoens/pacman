@@ -29,6 +29,11 @@ public class Node {
         this.y = y;
     }
 
+    public Node(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public int getFCost() {
         return gCost + hCost;
     }

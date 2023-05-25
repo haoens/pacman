@@ -19,7 +19,7 @@ public class Driver {
             // If Folder Argument run in test mode
             else {
                 GameCallback gameCallback = new GameCallback();
-                String propertiesPath =  "pacman/properties/test2.properties";
+                String propertiesPath =  "pacman/properties/test.properties";
                 final Properties properties = PropertiesLoader.loadPropertiesFile(propertiesPath);
                 Game game = new Game(gameCallback, properties, targetFile.getPath());
                 if (game.hasFailedChecking()) {
