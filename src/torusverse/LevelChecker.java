@@ -1,5 +1,9 @@
 package torusverse;
 
+import ch.aplu.jgamegrid.Location;
+import src.pathfinding.Grid;
+import src.pathfinding.PathFinding;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +19,8 @@ public class LevelChecker {
 
     private final HashMap<String, List<Portal>> portals;
     private final List<Portal> linkedPortals;
+    private final static int nbHorzCells = 20;
+    private final static int nbVertCells = 11;
 
     public LevelChecker(char[][] map) {
         this.map = map;
@@ -100,80 +106,6 @@ public class LevelChecker {
         }
     }
 
-    public boolean IsWalkable( Point point) {
-        if (point.y < 0 || point.y > map.length - 1) return false;
-        if (point.x < 0 || point.x > map[0].length - 1) return false;
-        return map[point.y][point.x] != 'b';
-    }
-
-    public boolean pointOutOfBounds(Point point){
-        if (map.length == 0) return false;
-
-        return point.y >= map.length || point.y < 0 || point.x < 0 || point.x >= map[0].length;
-    }
-
-    public List<Point> FindNeighbors(Point point) {
-        List<Point> neighbors = new ArrayList<>();
-        Point up = point.offset(0,  1);
-        if (pointOutOfBounds(up)) up.y = 0;
-        Point down = point.offset(0,  -1);
-        if (pointOutOfBounds(down)) down.y = map.length - 1;
-        Point left = point.offset(-1, 0);
-        if (pointOutOfBounds(left)) left.x = map[0].length - 1;
-        Point right = point.offset(1, 0);
-        if (pointOutOfBounds(right)) right.x = 0;
-
-//      Check if neighbour locations are portals
-        for (Portal portal: linkedPortals) {
-            Point connectedPortalPoint = portal.getConnectedPortal().getPoint();
-            if (portal.getPoint().equals(up)) up = connectedPortalPoint;
-            else if (portal.getPoint().equals(down)) down = connectedPortalPoint;
-            else if (portal.getPoint().equals(left)) left = connectedPortalPoint;
-            else if (portal.getPoint().equals(right)) right = connectedPortalPoint;
-        }
-
-        if (IsWalkable(up)) neighbors.add(up);
-        if (IsWalkable(down)) neighbors.add(down);
-        if (IsWalkable(left)) neighbors.add(left);
-        if (IsWalkable(right)) neighbors.add(right);
-        return neighbors;
-    }
-
-    public List<Point> findPath(Point start, Point end) {
-        boolean finished = false;
-        List<Point> used = new ArrayList<>();
-        used.add(start);
-        while (!finished) {
-            List<Point> newOpen = new ArrayList<>();
-            for(int i = 0; i < used.size(); ++i){
-                Point point = used.get(i);
-                for (Point neighbor : FindNeighbors(point)) {
-                    if (!used.contains(neighbor) && !newOpen.contains(neighbor)) {
-                        newOpen.add(neighbor);
-                    }
-                }
-            }
-            for(Point point : newOpen) {
-                used.add(point);
-                if (end.equals(point)) {
-                    finished = true;
-                    break;
-                }
-            }
-
-            if (!finished && newOpen.isEmpty())
-                return null;
-        }
-
-        List<Point> path = new ArrayList<>();
-        Point point = used.get(used.size() - 1);
-        while(point.previous != null) {
-            path.add(0, point);
-            point = point.previous;
-        }
-        return path;
-    }
-
     public void parseMap(){
         if (map.length == 0) return;
 
@@ -208,19 +140,39 @@ public class LevelChecker {
         return pacLocations.size() == 1;
     }
     public boolean checkAllPillsAndGold(){
+        boolean[][] walkableTiles = new boolean[nbHorzCells][nbVertCells];
+        for(int i = 0; i < nbVertCells; i++) {
+            for(int j = 0; j < nbHorzCells; j++) {
+                char mapChar = map[i][j];
+                if(mapChar != 'b') {
+                    walkableTiles[j][i] = true;
+                }
+            }
+        }
+        Grid grid = new Grid(nbHorzCells, nbVertCells, walkableTiles);
+        HashMap<Location, Location> portalLocations = new HashMap<>();
+        for(Portal portal : linkedPortals) {
+            Location portalLocation = new Location(portal.getPoint().x, portal.getPoint().y);
+            Portal connectedPortal = portal.getConnectedPortal();
+            Location connectedPortalLocation = new Location(connectedPortal.getPoint().x, connectedPortal.getPoint().y);
+            portalLocations.put(portalLocation, connectedPortalLocation);
+        }
+
         List<Point> inaccessible_pills = new ArrayList<>();
-        Point pac_start = pacLocations.get(0);
+        Location pac_start = new Location(pacLocations.get(0).x, pacLocations.get(0).y);
         if (pac_start == null) return false;
         for (Point pill: pillLocations) {
-            List<Point> path = findPath(pac_start, pill);
-            if (path == null) { // no path exists
+            Location pillLocation = new Location(pill.x, pill.y);
+            List<Location> path = PathFinding.findPath(grid, pac_start, pillLocation, false, portalLocations);
+            if (path.isEmpty()) { // no path exists
                 inaccessible_pills.add(pill);
             }
         }
         List<Point> inaccessible_gold = new ArrayList<>();
         for (Point gold: goldLocations) {
-            List<Point> path = findPath(pac_start, gold);
-            if (path == null) { // no path exists
+            Location goldLocation = new Location(gold.x, gold.y);
+            List<Location> path = PathFinding.findPath(grid, pac_start, goldLocation, false, portalLocations);
+            if (path.isEmpty()) { // no path exists
                 inaccessible_gold.add(gold);
             }
         }
