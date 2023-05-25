@@ -1,20 +1,14 @@
 package src.pathfinding;
 
 import ch.aplu.jgamegrid.Location;
-import src.Game;
-import src.Portal;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Modified from https://github.com/patrykkrawczyk/2D-A-path-finding-in-Java/
  * Class used to find the best path from A to B.
  */
 public class PathFinding {
-    private Game game;
     /**
      * Method you should use to get path allowing 4 directional movement
      *
@@ -22,10 +16,10 @@ public class PathFinding {
      * @param startPos       starting position.
      * @param targetPos      ending position.
      * @param allowDiagonals Pass true if you want 8 directional pathfinding, false for 4 direcitonal
-     * @param portals
-     * @return
+     * @param portals        portal locations with connected portal location
+     * @return  List of locations that make up best path
      */
-    public static List<Location> findPath(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, ArrayList<Portal> portals) {
+    public static List<Location> findPath(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, HashMap<Location, Location> portals) {
         // Find path
         List<Node> pathInNodes = findPathNodes(grid, startPos, targetPos, allowDiagonals, portals);
 
@@ -47,10 +41,10 @@ public class PathFinding {
      * @param startPos       Starting position.
      * @param targetPos      Targeted position.
      * @param allowDiagonals Pass true if you want 8 directional pathfinding, false for 4 direcitonal
-     * @param portals
+     * @param portals        portal locations with connected portal locations
      * @return List of Node's with found path.
      */
-    private static List<Node> findPathNodes(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, ArrayList<Portal> portals) {
+    private static List<Node> findPathNodes(Grid grid, Location startPos, Location targetPos, boolean allowDiagonals, HashMap<Location, Location> portals) {
         Node startNode = grid.nodes[startPos.x][startPos.y];
         Node targetNode = grid.nodes[targetPos.x][targetPos.y];
 

@@ -70,7 +70,6 @@ public class Game extends GameGrid
       drawGrid(bg);
 
       pacActor.setGrid();
-      pacActor.getItemLocations();
 
       // Initialize the needed amount of tx5 and Troll.
       for (int i = 0; i < grid.getNumTroll(level); i++) {
@@ -111,6 +110,7 @@ public class Game extends GameGrid
       boolean hasPacmanEatAllPills;
       setupPillAndItemsLocations();
       int maxPillsAndItems = countPillsAndItems();
+      pacActor.getItemLocations();
 
       do {
         if (hasMonsters) {
@@ -159,7 +159,7 @@ public class Game extends GameGrid
         addActor(new Actor("sprites/explosion3.gif"), loc);
         break;
       }
-      else if (hasPacmanEatAllPills && lastLevel()) {
+      else if (lastLevel()) {
         bg.setPaintColor(Color.yellow);
         title = "YOU WIN";
         break;
@@ -178,6 +178,7 @@ public class Game extends GameGrid
         for(Portal portal : portals) {
           portal.removeSelf();
         }
+        portals.clear();
         pillAndItemLocations.clear();
       }
     }
@@ -262,14 +263,10 @@ public class Game extends GameGrid
     }
 
     if (propertyPillLocations.size() > 0) {
-      for (Location location : propertyPillLocations) {
-        pillAndItemLocations.add(location);
-      }
+      pillAndItemLocations.addAll(propertyPillLocations);
     }
     if (propertyGoldLocations.size() > 0) {
-      for (Location location : propertyGoldLocations) {
-        pillAndItemLocations.add(location);
-      }
+      pillAndItemLocations.addAll(propertyGoldLocations);
     }
   }
 
@@ -353,7 +350,7 @@ public class Game extends GameGrid
 
   private void checkPortalPair(Portal portal, int index) {
     for(Portal otherPortal : portals) {
-      if (portal.getIndex() == index) {
+      if (otherPortal.getIndex() == index) {
         portal.setPairedPortal(otherPortal);
         otherPortal.setPairedPortal(portal);
       }
@@ -378,10 +375,10 @@ public class Game extends GameGrid
   }
 
   public int getNumHorzCells(){
-    return this.nbHorzCells;
+    return nbHorzCells;
   }
   public int getNumVertCells(){
-    return this.nbVertCells;
+    return nbVertCells;
   }
   public ArrayList<Portal> getPortals() {
     return this.portals;

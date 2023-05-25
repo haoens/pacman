@@ -9,6 +9,7 @@ import src.pathfinding.PathFinding;
 import java.awt.event.KeyEvent;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -36,11 +37,6 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     isAuto = auto;
   }
 
-  public boolean getAuto(){
-    return isAuto;
-  }
-
-
   public void setSeed(int seed) {
     this.seed = seed;
     randomiser.setSeed(seed);
@@ -54,24 +50,23 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     if (isRemoved())  // Already removed
       return;
     Location next = null;
-    switch (keyCode)
-    {
-      case KeyEvent.VK_LEFT:
+    switch (keyCode) {
+      case KeyEvent.VK_LEFT -> {
         next = getLocation().getNeighbourLocation(Location.WEST);
         setDirection(Location.WEST);
-        break;
-      case KeyEvent.VK_UP:
+      }
+      case KeyEvent.VK_UP -> {
         next = getLocation().getNeighbourLocation(Location.NORTH);
         setDirection(Location.NORTH);
-        break;
-      case KeyEvent.VK_RIGHT:
+      }
+      case KeyEvent.VK_RIGHT -> {
         next = getLocation().getNeighbourLocation(Location.EAST);
         setDirection(Location.EAST);
-        break;
-      case KeyEvent.VK_DOWN:
+      }
+      case KeyEvent.VK_DOWN -> {
         next = getLocation().getNeighbourLocation(Location.SOUTH);
         setDirection(Location.SOUTH);
-        break;
+      }
     }
     if (next != null && canMove(next))
     {
@@ -119,7 +114,11 @@ public class PacActor extends Actor implements GGKeyRepeatListener
           break;
         }
         ArrayList<Portal> portals = game.getPortals();
-        itemPaths.add(PathFinding.findPath(grid, this.getLocation(), itemLocation, false, portals));
+        HashMap<Location, Location> portalLocations = new HashMap<>();
+        for(Portal portal : portals){
+          portalLocations.put(portal.getLocation(), portal.getPairedPortal().getLocation());
+        }
+        itemPaths.add(PathFinding.findPath(grid, this.getLocation(), itemLocation, false, portalLocations));
       }
       int shortestPath = 9000;
       for(List<Location> itemPath : itemPaths) {
@@ -147,11 +146,8 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private boolean canMove(Location location)
   {
     Color c = getBackground().getColor(location);
-    if ( c.equals(Color.gray) || location.getX() >= game.getNumHorzCells()
-            || location.getX() < 0 || location.getY() >= game.getNumVertCells() || location.getY() < 0)
-      return false;
-    else
-      return true;
+    return !c.equals(Color.gray) && location.getX() < game.getNumHorzCells()
+            && location.getX() >= 0 && location.getY() < game.getNumVertCells() && location.getY() >= 0;
   }
 
   public int getNbPills() {

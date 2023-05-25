@@ -1,10 +1,11 @@
 package src.pathfinding;
 
 import ch.aplu.jgamegrid.Location;
-import src.Portal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The grid of nodes we use to find path
@@ -72,16 +73,15 @@ public class Grid {
         return neighbours;
     }
 
-    public List<Node> get4Neighbours(Node node, ArrayList<Portal> portals) {
+    public List<Node> get4Neighbours(Node node, HashMap<Location, Location> portals) {
         List<Node> neighbours = new ArrayList<>();
         boolean addedPortal = false;
 
         if (node.y + 1 >= 0 && node.y + 1  < gridHeight) {
             Location nodeLoc = new Location(node.x, node.y + 1);
-            for(Portal portal : portals) {
-                if(portal.getLocation().equals((nodeLoc))) {
-                    Portal connectedPortal = portal.getPairedPortal();
-                    neighbours.add(nodes[connectedPortal.getX()][connectedPortal.getY()]);
+            for(Map.Entry<Location, Location> set : portals.entrySet()) {
+                if(set.getKey().equals((nodeLoc))) {
+                    neighbours.add(nodes[set.getValue().getX()][set.getValue().getY()]);
                     addedPortal = true;
                     break;
                 }
@@ -93,10 +93,9 @@ public class Grid {
         }
         if (node.y - 1 >= 0 && node.y - 1  < gridHeight) {
             Location nodeLoc = new Location(node.x, node.y - 1);
-            for(Portal portal : portals) {
-                if(portal.getLocation().equals((nodeLoc))) {
-                    Portal connectedPortal = portal.getPairedPortal();
-                    neighbours.add(nodes[connectedPortal.getX()][connectedPortal.getY()]);
+            for(Map.Entry<Location, Location> set : portals.entrySet()) {
+                if(set.getKey().equals((nodeLoc))) {
+                    neighbours.add(nodes[set.getValue().getX()][set.getValue().getY()]);
                     addedPortal = true;
                     break;
                 }
@@ -108,10 +107,9 @@ public class Grid {
         }
         if (node.x + 1 >= 0 && node.x + 1  < gridWidth) {
             Location nodeLoc = new Location(node.x + 1, node.y);
-            for(Portal portal : portals) {
-                if(portal.getLocation().equals((nodeLoc))) {
-                    Portal connectedPortal = portal.getPairedPortal();
-                    neighbours.add(nodes[connectedPortal.getX()][connectedPortal.getY()]);
+            for(Map.Entry<Location, Location> set : portals.entrySet()) {
+                if(set.getKey().equals((nodeLoc))) {
+                    neighbours.add(nodes[set.getValue().getX()][set.getValue().getY()]);
                     addedPortal = true;
                     break;
                 }
@@ -123,10 +121,9 @@ public class Grid {
         }
         if (node.x - 1 >= 0 && node.x - 1  < gridWidth) {
             Location nodeLoc = new Location(node.x - 1, node.y);
-            for(Portal portal : portals) {
-                if(portal.getLocation().equals((nodeLoc))) {
-                    Portal connectedPortal = portal.getPairedPortal();
-                    neighbours.add(nodes[connectedPortal.getX()][connectedPortal.getY()]);
+            for(Map.Entry<Location, Location> set : portals.entrySet()) {
+                if(set.getKey().equals((nodeLoc))) {
+                    neighbours.add(nodes[set.getValue().getX()][set.getValue().getY()]);
                     addedPortal = true;
                     break;
                 }
