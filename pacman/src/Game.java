@@ -3,6 +3,7 @@
 package src;
 
 import ch.aplu.jgamegrid.*;
+import src.pathfinding.Grid;
 import src.utility.GameCallback;
 import torusverse.BaseTorusCheck;
 import torusverse.PacManGameGridAdapter;
@@ -18,6 +19,7 @@ public class Game extends GameGrid
   private final static int nbHorzCells = 20;
   private final static int nbVertCells = 11;
   protected PacManGameGrid grid;
+  private Grid pathFinderGrid;
 
   protected PacActor pacActor = new PacActor(this);
 
@@ -69,7 +71,7 @@ public class Game extends GameGrid
       GGBackground bg = getBg();
       drawGrid(bg);
 
-      pacActor.setGrid();
+      this.setGrid();
 
       // Initialize the needed amount of tx5 and Troll.
       for (int i = 0; i < grid.getNumTroll(level); i++) {
@@ -408,5 +410,23 @@ public class Game extends GameGrid
       baseTorusCheck = new BaseTorusCheck(adapter, file.getName());
     }
     return baseTorusCheck.doCheck();
+  }
+
+  public void setGrid(){
+    int gridWidth = nbHorzCells;
+    int gridHeight = nbVertCells;
+    boolean[][] walkableTiles = new boolean[gridWidth][gridHeight];
+    for(int i = 0; i < gridWidth; i++) {
+      for(int j = 0; j < gridHeight; j ++) {
+        if(grid.getCell(new Location(i, j), level) > 0) {
+          walkableTiles[i][j] = true;
+        }
+      }
+    }
+    this.pathFinderGrid = new Grid(gridWidth, gridHeight, walkableTiles);
+  }
+
+  public Grid getPathFinderGrid(){
+    return pathFinderGrid;
   }
 }

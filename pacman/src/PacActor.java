@@ -3,7 +3,6 @@
 package src;
 
 import ch.aplu.jgamegrid.*;
-import src.pathfinding.Grid;
 import src.pathfinding.PathFinding;
 
 import java.awt.event.KeyEvent;
@@ -20,7 +19,6 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private int nbPills = 0;
   private int score = 0;
   private Game game;
-  private Grid grid;
   private ArrayList<List<Location>> itemPaths = new ArrayList<>();
   private List<Location> itemLocations;
   private List<Location> currentPath;
@@ -118,7 +116,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
         for(GamePortal portal : portals){
           portalLocations.put(portal.getLocation(), portal.getPairedPortal().getLocation());
         }
-        itemPaths.add(PathFinding.findPath(grid, this.getLocation(), itemLocation, false, portalLocations));
+        itemPaths.add(PathFinding.findPath(game.getPathFinderGrid(), this.getLocation(), itemLocation, false, portalLocations));
       }
       int shortestPath = 9000;
       for(List<Location> itemPath : itemPaths) {
@@ -177,20 +175,6 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     }
     String title = "[PacMan in the Multiverse] Current score: " + score;
     gameGrid.setTitle(title);
-  }
-
-  public void setGrid(){
-    int gridWidth = game.getNumHorzCells();
-    int gridHeight = game.getNumVertCells();
-    boolean[][] walkableTiles = new boolean[gridWidth][gridHeight];
-    for(int i = 0; i < gridWidth; i++) {
-      for(int j = 0; j < gridHeight; j ++) {
-        if(game.getGrid().getCell(new Location(i, j), game.getCurrentLevel()) > 0) {
-          walkableTiles[i][j] = true;
-        }
-      }
-    }
-    this.grid = new Grid(gridWidth, gridHeight, walkableTiles);
   }
   public void getItemLocations() {
     this.itemLocations = game.getPillAndItemLocations();
