@@ -213,12 +213,13 @@ public class Controller implements ActionListener, GUIInformation {
 				}
 				XMLOutputter xmlOutput = new XMLOutputter();
 				xmlOutput.setFormat(Format.getPrettyFormat());
-				xmlOutput
-						.output(doc, new FileWriter(chooser.getSelectedFile()));
+				xmlOutput.output(doc, new FileWriter(chooser.getSelectedFile()));
 
-				if (fromLevelCheckError == false) {
-					doLevelCheck();
-				}
+				currMap = chooser.getSelectedFile().getName();
+				doLevelCheck();
+
+
+
 			}
 		} catch (FileNotFoundException e1) {
 			JOptionPane.showMessageDialog(null, "Invalid file!", "error",
@@ -297,9 +298,7 @@ public class Controller implements ActionListener, GUIInformation {
 						}
 					}
 					grid.redrawGrid();
-					if (fromLevelCheckError == false) {
-						doLevelCheck();
-					}
+					doLevelCheck();
 				}
 			}
 		} catch (Exception e) {

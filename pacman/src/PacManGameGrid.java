@@ -215,10 +215,6 @@ public class PacManGameGrid
         }
         return count;
     }
-    public String getLevelName(int level) {
-        return sortGameFolder(getGameFolderContent(targetFile)).get(level).getName();
-    }
-
     public boolean getFailedGameCheck() {
         return failedGameCheck;
     }

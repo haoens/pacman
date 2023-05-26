@@ -32,6 +32,7 @@ public class Logger {
     public void logNoMap(String gameFolder) {
         try {
             fileWriter.write(gameFolder + " – no maps found");
+            fileWriter.flush();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -49,6 +50,7 @@ public class Logger {
                     fileWriter.write(duplicateFiles.get(i) + "; ");
                 }
             }
+            fileWriter.flush();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -70,6 +72,7 @@ public class Logger {
                 }
             }
             fileWriter.write("\n");
+            fileWriter.flush();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -100,6 +103,7 @@ public class Logger {
                 }
             }
             fileWriter.write("\n");
+            fileWriter.flush();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -107,12 +111,14 @@ public class Logger {
     }
     public void logAtLeastTwoGoldPill(String fileName) {
         try {
-            fileWriter.write("Level " + fileName + "- less than 2 Gold and Pill");
+            fileWriter.write("Level " + fileName + " - less than 2 Gold and Pill");
             fileWriter.write("\n");
+            fileWriter.flush();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+
     }
     public void logTwoTilesEachPortal(Map<String, List<Node>> portalMap, String fileName) {
         try {
@@ -122,6 +128,7 @@ public class Logger {
                     fileWriter.write("(" + set.getValue().get(i).x + "," + set.getValue().get(i).y + ")");
                 }
                 fileWriter.write("\n");
+                fileWriter.flush();
             }
         }
         catch (IOException e) {
@@ -130,7 +137,7 @@ public class Logger {
     }
     public void closeFileWriter() {
         try {
-            fileWriter.close();
+            fileWriter.flush();
         }
         catch (IOException e) {
             e.printStackTrace();
