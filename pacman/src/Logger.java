@@ -65,7 +65,7 @@ public class Logger {
             else if (pacmanLocations.size() > 1) {
                 fileWriter.write("Level " + fileName + " - more than one start for Pacman: ");
                 for (int i = 0;  i < pacmanLocations.size(); i++) {
-                    fileWriter.write("(" + pacmanLocations.get(i).x + "," + pacmanLocations.get(i).y + ")");
+                    fileWriter.write("(" + (pacmanLocations.get(i).x+1) + "," + (pacmanLocations.get(i).y+1) + ")");
                     if (!(i == pacmanLocations.size()-1)) {
                         fileWriter.write("; ");
                     }
@@ -83,7 +83,7 @@ public class Logger {
             if (inaccessibleGold.size() > 0) {
                 fileWriter.write("Level " + fileName + " - Gold not accessible: ");
                 for (int i = 0; i < inaccessibleGold.size(); i++) {
-                    fileWriter.write("(" + inaccessibleGold.get(i).x + "," + inaccessibleGold.get(i).y + ")");
+                    fileWriter.write("(" + (inaccessibleGold.get(i).x+1) + "," + (inaccessibleGold.get(i).y+1) + ")");
                     if (!(i == inaccessibleGold.size()-1)) {
                         fileWriter.write("; ");
                     }
@@ -96,7 +96,7 @@ public class Logger {
                 //fileWriter.close();
                 fileWriter.write("Level " + fileName + " - Pill not accessible: ");
                 for (int i = 0; i < inaccessiblePill.size(); i++) {
-                    fileWriter.write("(" + inaccessiblePill.get(i).x + "," + inaccessiblePill.get(i).y + ")");
+                    fileWriter.write("(" + (inaccessiblePill.get(i).x+1) + "," + (inaccessiblePill.get(i).y+1) + ")");
                     if (!(i == inaccessiblePill.size()-1)) {
                         fileWriter.write("; ");
                     }
@@ -125,7 +125,7 @@ public class Logger {
             for (Map.Entry<String, List<Node>> set : portalMap.entrySet()) {
                 fileWriter.write("Level " + fileName + " - portal " + set.getKey() + " count is not 2: ");
                 for (int i = 0; i < set.getValue().size(); i++) {
-                    fileWriter.write("(" + set.getValue().get(i).x + "," + set.getValue().get(i).y + ")");
+                    fileWriter.write("(" + (set.getValue().get(i).x+1) + "," + (set.getValue().get(i).y+1) + ")");
                 }
                 fileWriter.write("\n");
                 fileWriter.flush();

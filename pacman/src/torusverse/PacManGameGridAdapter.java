@@ -23,10 +23,10 @@ public class PacManGameGridAdapter implements MapInterface {
                     case 5 -> c = 'f';
                     case 6 -> c = 'g';
                     case 7 -> c = 'h';
-                    case 8 -> c = 'i';
-                    case 9 -> c = 'j';
-                    case 10 -> c = 'k';
-                    case 11 -> c = 'l';
+                    case 8 -> c = 'k';
+                    case 9 -> c = 'l';
+                    case 10 -> c = 'i';
+                    case 11 -> c = 'j';
                     default -> c = 'a';
                 }
                 arr[y][x] = c;

@@ -81,10 +81,7 @@ public class PacManGameGrid
     private File[] getGameFolderContent(File gameFolder) {
         // Filter out non-xml files & files that do not begin with digit
         FilenameFilter filter = (dir, name) -> {
-            if(Character.isDigit(name.charAt(0)) && name.toLowerCase().endsWith(".xml")){
-                return true;
-            }
-            return false;
+            return Character.isDigit(name.charAt(0)) && name.toLowerCase().endsWith(".xml");
         };
         return gameFolder.listFiles(filter);
     }
@@ -173,8 +170,8 @@ public class PacManGameGrid
         ArrayList<String> dupNumLevels = new ArrayList<>();
         for (ArrayList<String> fileNames: fileMap.values()) {
             if (fileNames.size() > 1) {
-                for (int i = 0; i < fileNames.size(); i++) {
-                    dupNumLevels.add(fileNames.get(i));
+                for (String fileName : fileNames) {
+                    dupNumLevels.add(fileName);
                 }
             }
         }
