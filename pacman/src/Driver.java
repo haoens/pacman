@@ -37,8 +37,6 @@ public class Driver {
                 if (!game.getGrid().getFailedGameCheck() && !game.hasFailedChecking()){
                     new Controller();
                 }
-                Logger logger = Logger.getInstance();
-                logger.closeFileWriter();
             }
         }
         // No argument, run in edit mode no map
@@ -46,7 +44,8 @@ public class Driver {
             new Controller();
         }
 
-
+        Logger logger = Logger.getInstance();
+        logger.closeFileWriter();
 
     }
 
