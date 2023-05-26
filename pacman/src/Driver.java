@@ -24,14 +24,21 @@ public class Driver {
                 String propertiesPath =  "pacman/properties/test.properties";
                 final Properties properties = PropertiesLoader.loadPropertiesFile(propertiesPath);
                 Game game = new Game(gameCallback, properties, targetFile.getPath());
+
+                // If failed game check then open empty map editor.
+                if (game.getGrid().getFailedGameCheck()) {
+                    new Controller();;
+                }
+                // If failed level check open map editor with failed level.
                 if (game.hasFailedChecking()) {
                     new Controller(game.getGrid().getNthFileSorted(targetFile, game.getCurrentLevel()), true);
-                    Logger logger = Logger.getInstance();
-                    logger.closeFileWriter();
                 }
-                else {
+                // If no game check or level check error then open map editor when pass all levels.
+                if (!game.getGrid().getFailedGameCheck() && !game.hasFailedChecking()){
                     new Controller();
                 }
+                Logger logger = Logger.getInstance();
+                logger.closeFileWriter();
             }
         }
         // No argument, run in edit mode no map
