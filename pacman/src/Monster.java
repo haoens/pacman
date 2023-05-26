@@ -154,7 +154,7 @@ public class Monster extends Actor
   private Location portalCheck(Location next){
     int cellID = game.grid.getCell(next, game.getCurrentLevel());
     if(8 <= cellID && cellID <= 11) {
-      for (Portal portal : game.getPortals()) {
+      for (GamePortal portal : game.getPortals()) {
         if (portal.getLocation().equals(next)) {
           next = portal.getPairedPortal().getLocation();
           break;

@@ -18,8 +18,8 @@ public class LevelChecker {
     private final List<Node> pillLocations;
     private final List<Node> pacLocations;
 
-    private final HashMap<String, List<Portal>> portals;
-    private final List<Portal> linkedPortals;
+    private final HashMap<String, List<MapPortal>> portals;
+    private final List<MapPortal> linkedPortals;
     private final static int nbHorzCells = 20;
     private final static int nbVertCells = 11;
 
@@ -71,8 +71,8 @@ public class LevelChecker {
         return arr;
     }
 
-    public HashMap<String, List<Portal>> initialisePortalList() {
-        HashMap<String, List<Portal>> portals = new HashMap<>();
+    public HashMap<String, List<MapPortal>> initialisePortalList() {
+        HashMap<String, List<MapPortal>> portals = new HashMap<>();
         String[] portalColors = {"White", "Yellow", "DarkGold", "DarkGray"};
         for (String color: portalColors) {
             portals.put(color, new ArrayList<>());
@@ -81,11 +81,11 @@ public class LevelChecker {
     }
 
     public boolean checkPortals(){
-        for (Map.Entry<String, List<Portal>> entry: portals.entrySet()){
-            List<Portal> portals = entry.getValue();
+        for (Map.Entry<String, List<MapPortal>> entry: portals.entrySet()){
+            List<MapPortal> portals = entry.getValue();
             if (portals.size() != 2) {
                 if (portals.size() != 0) {
-                    List<String> portalLocations = portals.stream().map(Portal::getNode)
+                    List<String> portalLocations = portals.stream().map(MapPortal::getNode)
                             .map(Object::toString)
                             .collect(Collectors.toList());
                     System.out.println("portal " + entry.getKey() + " count is not 2: " +
@@ -97,8 +97,8 @@ public class LevelChecker {
     }
 
     public void linkPortals(){
-        for (Map.Entry<String, List<Portal>> entry: portals.entrySet()){
-            List<Portal> portals = entry.getValue();
+        for (Map.Entry<String, List<MapPortal>> entry: portals.entrySet()){
+            List<MapPortal> portals = entry.getValue();
             if (portals.size() == 2) {
                 portals.get(0).joinPortals(portals.get(1));
                 this.linkedPortals.add(portals.get(0));
@@ -117,10 +117,10 @@ public class LevelChecker {
                     case 'd' -> goldLocations.add(new Node(x, y));
                     case 'c' -> pillLocations.add(new Node(x, y));
                     case 'f' -> pacLocations.add(new Node(x, y));
-                    case 'i' -> portals.get("White").add(new Portal(x, y));
-                    case 'j' -> portals.get("Yellow").add(new Portal(x, y));
-                    case 'k' -> portals.get("DarkGold").add(new Portal(x, y));
-                    case 'l' -> portals.get("DarkGray").add(new Portal(x, y));
+                    case 'i' -> portals.get("White").add(new MapPortal(x, y));
+                    case 'j' -> portals.get("Yellow").add(new MapPortal(x, y));
+                    case 'k' -> portals.get("DarkGold").add(new MapPortal(x, y));
+                    case 'l' -> portals.get("DarkGray").add(new MapPortal(x, y));
                     default -> {}
                 }
             }
@@ -152,9 +152,9 @@ public class LevelChecker {
         }
         Grid grid = new Grid(nbHorzCells, nbVertCells, walkableTiles);
         HashMap<Location, Location> portalLocations = new HashMap<>();
-        for(Portal portal : linkedPortals) {
+        for(MapPortal portal : linkedPortals) {
             Location portalLocation = new Location(portal.getNode().x, portal.getNode().y);
-            Portal connectedPortal = portal.getConnectedPortal();
+            MapPortal connectedPortal = portal.getConnectedPortal();
             Location connectedPortalLocation = new Location(connectedPortal.getNode().x, connectedPortal.getNode().y);
             portalLocations.put(portalLocation, connectedPortalLocation);
         }

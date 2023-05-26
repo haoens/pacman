@@ -2,20 +2,20 @@ package src;
 
 import ch.aplu.jgamegrid.Actor;
 
-public class Portal extends Actor {
-    private Portal pairedPortal;
+public class GamePortal extends Actor {
+    private GamePortal pairedPortal;
     private int index;
 
-    public Portal(String filename, int index) {
+    public GamePortal(String filename, int index) {
         super(filename);
         this.index = index;
     }
 
-    public void setPairedPortal(Portal pairedPortal) {
+    public void setPairedPortal(GamePortal pairedPortal) {
         this.pairedPortal = pairedPortal;
     }
 
-    public Portal getPairedPortal() {
+    public GamePortal getPairedPortal() {
         return pairedPortal;
     }
 

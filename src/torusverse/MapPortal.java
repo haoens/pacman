@@ -2,11 +2,11 @@ package torusverse;
 
 import src.pathfinding.Node;
 
-public class Portal {
+public class MapPortal {
     private Node node;
-    private Portal connectedPortal;
+    private MapPortal connectedPortal;
 
-    public Portal(int x, int y){
+    public MapPortal(int x, int y){
         this.node = new Node(x, y);
     }
 
@@ -14,10 +14,10 @@ public class Portal {
         return node;
     }
 
-    public Portal getConnectedPortal(){
+    public MapPortal getConnectedPortal(){
         return connectedPortal;
     }
-    public void joinPortals(Portal targetPortal){
+    public void joinPortals(MapPortal targetPortal){
         this.connectedPortal = targetPortal;
         targetPortal.connectedPortal = this;
     }

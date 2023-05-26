@@ -27,7 +27,7 @@ public class Game extends GameGrid
   private ArrayList<Location> pillAndItemLocations = new ArrayList<>();
   private ArrayList<Actor> iceCubes = new ArrayList<>();
   private ArrayList<Actor> goldPieces = new ArrayList<>();
-  private ArrayList<Portal> portals = new ArrayList<>();
+  private ArrayList<GamePortal> portals = new ArrayList<>();
   private GameCallback gameCallback;
   private Properties properties;
   private int seed = 30006;
@@ -175,7 +175,7 @@ public class Game extends GameGrid
         for(Actor ice : iceCubes) {
           ice.removeSelf();
         }
-        for(Portal portal : portals) {
+        for(GamePortal portal : portals) {
           portal.removeSelf();
         }
         portals.clear();
@@ -325,22 +325,22 @@ public class Game extends GameGrid
 
   private void putPortal(Location location, int index) {
     // Need to set paired portal when possible
-    Portal portal = null;
+    GamePortal portal = null;
     switch (index) {
       case 8 -> {
-        portal = new Portal("sprites/portalDarkGoldTile.png", index);
+        portal = new GamePortal("sprites/portalDarkGoldTile.png", index);
         checkPortalPair(portal, index);
       }
       case 9 -> {
-        portal = new Portal("sprites/portalDarkGrayTile.png", index);
+        portal = new GamePortal("sprites/portalDarkGrayTile.png", index);
         checkPortalPair(portal, index);
       }
       case 10 -> {
-        portal = new Portal("sprites/portalWhiteTile.png", index);
+        portal = new GamePortal("sprites/portalWhiteTile.png", index);
         checkPortalPair(portal, index);
       }
       case 11 -> {
-        portal = new Portal("sprites/portalYellowTile.png", index);
+        portal = new GamePortal("sprites/portalYellowTile.png", index);
         checkPortalPair(portal, index);
       }
     }
@@ -348,8 +348,8 @@ public class Game extends GameGrid
     addActor(portal, location);
   }
 
-  private void checkPortalPair(Portal portal, int index) {
-    for(Portal otherPortal : portals) {
+  private void checkPortalPair(GamePortal portal, int index) {
+    for(GamePortal otherPortal : portals) {
       if (otherPortal.getIndex() == index) {
         portal.setPairedPortal(otherPortal);
         otherPortal.setPairedPortal(portal);
@@ -380,7 +380,7 @@ public class Game extends GameGrid
   public int getNumVertCells(){
     return nbVertCells;
   }
-  public ArrayList<Portal> getPortals() {
+  public ArrayList<GamePortal> getPortals() {
     return this.portals;
   }
   public int getCurrentLevel() {

@@ -18,8 +18,8 @@ public class AccessibilityCheck implements LevelCheck {
     private final List<Node> goldLocations = new ArrayList<>();
     private final List<Node> pillLocations = new ArrayList<>();
     private final List<Node> pacLocations = new ArrayList<>();
-    private final HashMap<String, List<Portal>> portals;
-    private final List<Portal> linkedPortals = new ArrayList<>();
+    private final HashMap<String, List<MapPortal>> portals;
+    private final List<MapPortal> linkedPortals = new ArrayList<>();
     private final int nbHorzCells;
     private final int nbVertCells;
     private String filename;
@@ -46,17 +46,17 @@ public class AccessibilityCheck implements LevelCheck {
                     case 'd' -> goldLocations.add(new Node(x, y));
                     case 'c' -> pillLocations.add(new Node(x, y));
                     case 'f' -> pacLocations.add(new Node(x, y));
-                    case 'i' -> portals.get("White").add(new Portal(x, y));
-                    case 'j' -> portals.get("Yellow").add(new Portal(x, y));
-                    case 'k' -> portals.get("DarkGold").add(new Portal(x, y));
-                    case 'l' -> portals.get("DarkGray").add(new Portal(x, y));
+                    case 'i' -> portals.get("White").add(new MapPortal(x, y));
+                    case 'j' -> portals.get("Yellow").add(new MapPortal(x, y));
+                    case 'k' -> portals.get("DarkGold").add(new MapPortal(x, y));
+                    case 'l' -> portals.get("DarkGray").add(new MapPortal(x, y));
                     default -> {}
                 }
             }
         }
     }
-    public HashMap<String, List<Portal>> initialisePortalList() {
-        HashMap<String, List<Portal>> portals = new HashMap<>();
+    public HashMap<String, List<MapPortal>> initialisePortalList() {
+        HashMap<String, List<MapPortal>> portals = new HashMap<>();
         String[] portalColors = {"White", "Yellow", "DarkGold", "DarkGray"};
         for (String color : portalColors) {
             portals.put(color, new ArrayList<>());
@@ -65,8 +65,8 @@ public class AccessibilityCheck implements LevelCheck {
     }
 
     public void linkPortals(){
-        for (Map.Entry<String, List<Portal>> entry: portals.entrySet()){
-            List<Portal> portals = entry.getValue();
+        for (Map.Entry<String, List<MapPortal>> entry: portals.entrySet()){
+            List<MapPortal> portals = entry.getValue();
             if (portals.size() == 2) {
                 portals.get(0).joinPortals(portals.get(1));
                 this.linkedPortals.add(portals.get(0));
@@ -86,9 +86,9 @@ public class AccessibilityCheck implements LevelCheck {
         }
         Grid grid = new Grid(nbHorzCells, nbVertCells, walkableTiles);
         HashMap<Location, Location> portalLocations = new HashMap<>();
-        for (Portal portal : linkedPortals) {
+        for (MapPortal portal : linkedPortals) {
             Location portalLocation = new Location(portal.getNode().x, portal.getNode().y);
-            Portal connectedPortal = portal.getConnectedPortal();
+            MapPortal connectedPortal = portal.getConnectedPortal();
             Location connectedPortalLocation = new Location(connectedPortal.getNode().x, connectedPortal.getNode().y);
             portalLocations.put(portalLocation, connectedPortalLocation);
         }

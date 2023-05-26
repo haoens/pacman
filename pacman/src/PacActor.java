@@ -72,7 +72,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
     {
       int cellID = game.grid.getCell(next, game.getCurrentLevel());
       if(8 <= cellID && cellID <= 11) {
-        for (Portal portal : game.getPortals()) {
+        for (GamePortal portal : game.getPortals()) {
           if (portal.getLocation().equals(next)) {
             next = portal.getPairedPortal().getLocation();
             break;
@@ -113,9 +113,9 @@ public class PacActor extends Actor implements GGKeyRepeatListener
           itemPaths.add(itemPath);
           break;
         }
-        ArrayList<Portal> portals = game.getPortals();
+        ArrayList<GamePortal> portals = game.getPortals();
         HashMap<Location, Location> portalLocations = new HashMap<>();
-        for(Portal portal : portals){
+        for(GamePortal portal : portals){
           portalLocations.put(portal.getLocation(), portal.getPairedPortal().getLocation());
         }
         itemPaths.add(PathFinding.findPath(grid, this.getLocation(), itemLocation, false, portalLocations));
