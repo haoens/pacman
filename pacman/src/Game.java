@@ -57,6 +57,12 @@ public class Game extends GameGrid
     addKeyRepeatListener(pacActor);
 
     while(true) {
+
+      // Do Gamecheck before test
+      if (grid.getFailedGameCheck() == true) {
+        break;
+      }
+
       //Do Level Check before test
       if (!doLevelCheck(filepath)){
         failedChecking = true;

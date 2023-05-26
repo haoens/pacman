@@ -18,6 +18,7 @@ public class PacManGameGrid
     private ArrayList<int[][]> mazeArray =  new ArrayList<>();
     private String filepath;
     private File targetFile;
+    private boolean failedGameCheck = false;
 
     public PacManGameGrid(int nbHorzCells, int nbVertCells, String filepath)
     {
@@ -31,6 +32,9 @@ public class PacManGameGrid
             if (gameCheck(getGameFolderContent(targetFile))) {
                 // Pass game check load xml to maze array
                 mazeArray = xmlToMazeArray(sortGameFolder(getGameFolderContent(targetFile)));
+            }
+            else {
+                failedGameCheck = true;
             }
         }
         else {
@@ -213,6 +217,10 @@ public class PacManGameGrid
     }
     public String getLevelName(int level) {
         return sortGameFolder(getGameFolderContent(targetFile)).get(level).getName();
+    }
+
+    public boolean getFailedGameCheck() {
+        return failedGameCheck;
     }
 
 }
