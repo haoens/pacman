@@ -1,15 +1,17 @@
 package torusverse;
 
+import src.pathfinding.Node;
+
 public class Portal {
-    private Point point;
+    private Node node;
     private Portal connectedPortal;
 
     public Portal(int x, int y){
-        this.point = new Point(x, y, null);
+        this.node = new Node(x, y);
     }
 
-    public Point getPoint(){
-        return point;
+    public Node getNode(){
+        return node;
     }
 
     public Portal getConnectedPortal(){

@@ -2,6 +2,7 @@ package torusverse;
 
 import ch.aplu.jgamegrid.Location;
 import src.pathfinding.Grid;
+import src.pathfinding.Node;
 import src.pathfinding.PathFinding;
 
 import java.util.ArrayList;
@@ -13,9 +14,9 @@ import java.util.stream.Collectors;
 // Basic Path finding took from here https://gamedev.stackexchange.com/questions/197165/java-simple-2d-grid-pathfinding
 public class LevelChecker {
     private final char[][] map;
-    private final List<Point> goldLocations;
-    private final List<Point> pillLocations;
-    private final List<Point> pacLocations;
+    private final List<Node> goldLocations;
+    private final List<Node> pillLocations;
+    private final List<Node> pacLocations;
 
     private final HashMap<String, List<Portal>> portals;
     private final List<Portal> linkedPortals;
@@ -84,7 +85,7 @@ public class LevelChecker {
             List<Portal> portals = entry.getValue();
             if (portals.size() != 2) {
                 if (portals.size() != 0) {
-                    List<String> portalLocations = portals.stream().map(Portal::getPoint)
+                    List<String> portalLocations = portals.stream().map(Portal::getNode)
                             .map(Object::toString)
                             .collect(Collectors.toList());
                     System.out.println("portal " + entry.getKey() + " count is not 2: " +
@@ -113,9 +114,9 @@ public class LevelChecker {
             for (int x = 0; x < map[0].length; x++) {
                 char a = map[y][x];
                 switch (a) {
-                    case 'd' -> goldLocations.add(new Point(x, y, null));
-                    case 'c' -> pillLocations.add(new Point(x, y, null));
-                    case 'f' -> pacLocations.add(new Point(x, y, null));
+                    case 'd' -> goldLocations.add(new Node(x, y));
+                    case 'c' -> pillLocations.add(new Node(x, y));
+                    case 'f' -> pacLocations.add(new Node(x, y));
                     case 'i' -> portals.get("White").add(new Portal(x, y));
                     case 'j' -> portals.get("Yellow").add(new Portal(x, y));
                     case 'k' -> portals.get("DarkGold").add(new Portal(x, y));
@@ -125,12 +126,12 @@ public class LevelChecker {
             }
         }
         System.out.print("Gold: ");
-        for (Point gold: goldLocations) {
+        for (Node gold: goldLocations) {
             System.out.print(gold + " ");
         }
         System.out.println();
         System.out.print("Pills: ");
-        for (Point pill: pillLocations) {
+        for (Node pill: pillLocations) {
             System.out.print(pill + " ");
         }
         System.out.println();
@@ -152,24 +153,24 @@ public class LevelChecker {
         Grid grid = new Grid(nbHorzCells, nbVertCells, walkableTiles);
         HashMap<Location, Location> portalLocations = new HashMap<>();
         for(Portal portal : linkedPortals) {
-            Location portalLocation = new Location(portal.getPoint().x, portal.getPoint().y);
+            Location portalLocation = new Location(portal.getNode().x, portal.getNode().y);
             Portal connectedPortal = portal.getConnectedPortal();
-            Location connectedPortalLocation = new Location(connectedPortal.getPoint().x, connectedPortal.getPoint().y);
+            Location connectedPortalLocation = new Location(connectedPortal.getNode().x, connectedPortal.getNode().y);
             portalLocations.put(portalLocation, connectedPortalLocation);
         }
 
-        List<Point> inaccessible_pills = new ArrayList<>();
+        List<Node> inaccessible_pills = new ArrayList<>();
         Location pac_start = new Location(pacLocations.get(0).x, pacLocations.get(0).y);
         if (pac_start == null) return false;
-        for (Point pill: pillLocations) {
+        for (Node pill: pillLocations) {
             Location pillLocation = new Location(pill.x, pill.y);
             List<Location> path = PathFinding.findPath(grid, pac_start, pillLocation, false, portalLocations);
             if (path.isEmpty()) { // no path exists
                 inaccessible_pills.add(pill);
             }
         }
-        List<Point> inaccessible_gold = new ArrayList<>();
-        for (Point gold: goldLocations) {
+        List<Node> inaccessible_gold = new ArrayList<>();
+        for (Node gold: goldLocations) {
             Location goldLocation = new Location(gold.x, gold.y);
             List<Location> path = PathFinding.findPath(grid, pac_start, goldLocation, false, portalLocations);
             if (path.isEmpty()) { // no path exists
