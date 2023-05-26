@@ -56,26 +56,20 @@ public class Game extends GameGrid
     addKeyRepeatListener(pacActor);
 
     while(true) {
-
       // Do Gamecheck before test
-      if (grid.getFailedGameCheck() == true) {
+      if (grid.getFailedGameCheck()) {
         break;
       }
-
       //Do Level Check before test
       if (!doLevelCheck(filepath)){
         failedChecking = true;
-        System.out.println("Failed");
         break;
       }
-
       //Setup for auto test
       pacActor.setAuto(Boolean.parseBoolean(properties.getProperty("PacMan.isAuto")));
       seed = Integer.parseInt(properties.getProperty("seed"));
-
       GGBackground bg = getBg();
       drawGrid(bg);
-
       this.setGrid();
 
       // Initialize the needed amount of tx5 and Troll.
@@ -89,7 +83,6 @@ public class Game extends GameGrid
       //Setup Random seeds
       seed = Integer.parseInt(properties.getProperty("seed"));
       pacActor.setSeed(seed);
-
       for (Monster value : trollArray) {
         value.setSeed(seed);
         value.setSlowDown(3);
@@ -101,11 +94,7 @@ public class Game extends GameGrid
       }
 
       setKeyRepeatPeriod(150);
-
-      //troll.setSlowDown(3);
-      //tx5.setSlowDown(3);
       pacActor.setSlowDown(3);
-      //tx5.stopMoving(5);
       setupActorLocations();
 
       //Run the game
@@ -154,11 +143,7 @@ public class Game extends GameGrid
         monster.setStopMoving(true);
         monster.removeSelf();
       }
-      //troll.setStopMoving(true);
-      //tx5.setStopMoving(true);
-      //pacActor.removeSelf();
-      //troll.removeSelf();
-      //tx5.removeSelf();
+
       pacActor.removeSelf();
       if (hasPacmanBeenHit) {
         bg.setPaintColor(Color.red);
@@ -172,6 +157,7 @@ public class Game extends GameGrid
         break;
       }
       else {
+        // Go to the next level in game folder.
         level++;
         pacActor.resetNbPills();
         trollIndex = 0;
@@ -408,7 +394,7 @@ public class Game extends GameGrid
     PacManGameGridAdapter adapter = new PacManGameGridAdapter(this.grid, this.level);
     BaseTorusCheck baseTorusCheck;
     if (file.isDirectory()) {
-      File targetFile = new File(grid.getNthFileSorted(file, this.level));
+      File targetFile = new File(grid.getGameFolderController().getNthFileSorted(file, this.level));
       baseTorusCheck = new BaseTorusCheck(adapter, targetFile.getName());
     }
     else {

@@ -1,7 +1,6 @@
 package src;
 
 import src.mapeditor.editor.Controller;
-import src.*;
 import src.utility.GameCallback;
 import src.utility.PropertiesLoader;
 
@@ -27,11 +26,11 @@ public class Driver {
 
                 // If failed game check then open empty map editor.
                 if (game.getGrid().getFailedGameCheck()) {
-                    new Controller();;
+                    new Controller();
                 }
                 // If failed level check open map editor with failed level.
                 if (game.hasFailedChecking()) {
-                    new Controller(game.getGrid().getNthFileSorted(targetFile, game.getCurrentLevel()), true);
+                    new Controller(game.getGrid().getGameFolderController().getNthFileSorted(targetFile, game.getCurrentLevel()), true);
                 }
                 // If no game check or level check error then open map editor when pass all levels.
                 if (!game.getGrid().getFailedGameCheck() && !game.hasFailedChecking()){
@@ -44,10 +43,8 @@ public class Driver {
             new Controller();
         }
 
+        // Close the file writer in Logger.
         Logger logger = Logger.getInstance();
         logger.closeFileWriter();
-
     }
-
-
 }
