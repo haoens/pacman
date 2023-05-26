@@ -1,25 +1,47 @@
 package src;
 
+import src.mapeditor.editor.Controller;
+import src.*;
 import src.utility.GameCallback;
 import src.utility.PropertiesLoader;
 
+import java.io.File;
 import java.util.Properties;
 
 public class Driver {
-    public static final String DEFAULT_PROPERTIES_PATH = "pacman/properties/test2.properties";
+    public static void main(String[] args) {
 
-    /**
-     * Starting point
-     * @param args the command line arguments
-     */
-
-    public static void main(String args[]) {
-        String propertiesPath = DEFAULT_PROPERTIES_PATH;
         if (args.length > 0) {
-            propertiesPath = args[0];
+            File targetFile = new File(args[0]);
+
+            // If File Argument, run in edit mode
+            if (!targetFile.isDirectory()) {
+                new Controller(args[0], false);
+            }
+            // If Folder Argument run in test mode
+            else {
+                GameCallback gameCallback = new GameCallback();
+                String propertiesPath =  "pacman/properties/test.properties";
+                final Properties properties = PropertiesLoader.loadPropertiesFile(propertiesPath);
+                Game game = new Game(gameCallback, properties, targetFile.getPath());
+                if (game.hasFailedChecking()) {
+                    new Controller(game.getGrid().getNthFileSorted(targetFile, game.getCurrentLevel()), true);
+                    Logger logger = Logger.getInstance();
+                    logger.closeFileWriter();
+                }
+                else {
+                    new Controller();
+                }
+            }
         }
-        final Properties properties = PropertiesLoader.loadPropertiesFile(propertiesPath);
-        GameCallback gameCallback = new GameCallback();
-        new Game(gameCallback, properties, "pacman/gameFolder");
+        // No argument, run in edit mode no map
+        else {
+            new Controller();
+        }
+
+
+
     }
+
+
 }

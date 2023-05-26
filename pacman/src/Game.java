@@ -5,10 +5,9 @@ package src;
 import ch.aplu.jgamegrid.*;
 import src.pathfinding.Grid;
 import src.utility.GameCallback;
-import torusverse.BaseTorusCheck;
-import torusverse.PacManGameGridAdapter;
+import src.torusverse.BaseTorusCheck;
+import src.torusverse.PacManGameGridAdapter;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
