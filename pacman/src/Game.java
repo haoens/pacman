@@ -4,7 +4,8 @@ package src;
 
 import ch.aplu.jgamegrid.*;
 import src.utility.GameCallback;
-import torusverse.LevelChecker;
+import torusverse.BaseTorusCheck;
+import torusverse.PacManGameGridAdapter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,8 +56,7 @@ public class Game extends GameGrid
 
     while(true) {
       //Do Level Check before test
-      LevelChecker levelChecker = new LevelChecker(grid.getNthMazeArray(level));
-      if (!levelChecker.checkLevel()){
+      if (!doLevelCheck(filepath)){
         failedChecking = true;
         System.out.println("Failed");
         break;
@@ -395,4 +395,18 @@ public class Game extends GameGrid
 
   public PacManGameGrid getGrid() { return grid; }
   public boolean hasFailedChecking() { return failedChecking; }
+
+  private boolean doLevelCheck(String filepath) {
+    File file = new File(filepath);
+    PacManGameGridAdapter adapter = new PacManGameGridAdapter(this.grid, this.level);
+    BaseTorusCheck baseTorusCheck;
+    if (file.isDirectory()) {
+      File targetFile = new File(grid.getNthFileSorted(file, this.level));
+      baseTorusCheck = new BaseTorusCheck(adapter, targetFile.getName());
+    }
+    else {
+      baseTorusCheck = new BaseTorusCheck(adapter, file.getName());
+    }
+    return baseTorusCheck.doCheck();
+  }
 }

@@ -34,7 +34,8 @@ import src.Game;
 import src.utility.GameCallback;
 import src.utility.PropertiesLoader;
 
-import torusverse.LevelChecker;
+import torusverse.BaseTorusCheck;
+import torusverse.EditorGridModelAdapter;
 /**
  * Controller of the application.
  * 
@@ -73,8 +74,7 @@ public class Controller implements ActionListener, GUIInformation {
 
 	public Controller(String mapDir) {
 		this();
-		currMap = mapDir;
-		load_map();
+		startWithMap(mapDir);
 	}
 
 	public void init(int width, int height) {
@@ -110,12 +110,13 @@ public class Controller implements ActionListener, GUIInformation {
 		} else if (e.getActionCommand().equals("update")) {
 			updateGrid(gridWith, gridHeight);
 		} else if (e.getActionCommand().equals("start_game")) {
-//			To-do: start game
+
+			// To-do: Creates swing worker to run game
 			SwingWorker worker = new SwingWorker<Game, Void>() {
 				@Override
 				public Game doInBackground() {
 					GameCallback gameCallback = new GameCallback();
-					String propertiesPath =  "pacman/properties/test2.properties";
+					String propertiesPath =  "pacman/properties/test.properties";
 					final Properties properties = PropertiesLoader.loadPropertiesFile(propertiesPath);
 					Game game = new Game(gameCallback, properties, currMap);
 					return game;
@@ -213,6 +214,7 @@ public class Controller implements ActionListener, GUIInformation {
 				xmlOutput.setFormat(Format.getPrettyFormat());
 				xmlOutput
 						.output(doc, new FileWriter(chooser.getSelectedFile()));
+				doLevelCheck();
 			}
 		} catch (FileNotFoundException e1) {
 			JOptionPane.showMessageDialog(null, "Invalid file!", "error",
@@ -290,10 +292,8 @@ public class Controller implements ActionListener, GUIInformation {
 							model.setTile(x, y, tileNr);
 						}
 					}
-
-					LevelChecker levelChecker = new LevelChecker(model.getMap());
-					levelChecker.checkLevel();
 					grid.redrawGrid();
+					doLevelCheck();
 				}
 			}
 		} catch (Exception e) {
@@ -311,12 +311,13 @@ public class Controller implements ActionListener, GUIInformation {
 
 
 	// Self added functions
-	public void load_map() {
+	public void startWithMap(String startingMap) {
 		SAXBuilder builder = new SAXBuilder();
 		try {
 			File selectedFile;
 			Document document;
-			if (currMap == null) return ;
+			if (startingMap == null) return ;
+			currMap = startingMap;
 			selectedFile = new File(currMap);
 			if (selectedFile.canRead() && selectedFile.exists()) {
 				document = (Document) builder.build(selectedFile);
@@ -373,21 +374,16 @@ public class Controller implements ActionListener, GUIInformation {
 					}
 				}
 				grid.redrawGrid();
-				LevelChecker levelChecker = new LevelChecker(model.getMap());
-				levelChecker.checkLevel();
+				doLevelCheck();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	public void display_map(char[][] map){
-		for (int x = 0; x < map.length; x++) {
-			for (int y = 0; y < map[0].length; y++) {
-				System.out.print(map[x][y]);
-			}
-			System.out.println();
-		}
+	private boolean doLevelCheck() {
+		File file = new File(currMap);
+		EditorGridModelAdapter adapter = new EditorGridModelAdapter(this.model);
+		BaseTorusCheck torusCheck = new BaseTorusCheck(adapter, file.getName());
+		return torusCheck.doCheck();
 	}
-
 }
