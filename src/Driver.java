@@ -14,7 +14,7 @@ public class Driver {
 
             // If File Argument, run in edit mode
             if (!targetFile.isDirectory()) {
-                new Controller(args[0]);
+                new Controller(args[0], false);
             }
             // If Folder Argument run in test mode
             else {
@@ -23,7 +23,9 @@ public class Driver {
                 final Properties properties = PropertiesLoader.loadPropertiesFile(propertiesPath);
                 Game game = new Game(gameCallback, properties, targetFile.getPath());
                 if (game.hasFailedChecking()) {
-                    new Controller(game.getGrid().getNthFileSorted(targetFile, game.getCurrentLevel()));
+                    new Controller(game.getGrid().getNthFileSorted(targetFile, game.getCurrentLevel()), true);
+                    Logger logger = Logger.getInstance();
+                    logger.closeFileWriter();
                 }
                 else {
                     new Controller();
@@ -34,6 +36,9 @@ public class Driver {
         else {
             new Controller();
         }
+
+
+
     }
 
 

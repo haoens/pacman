@@ -61,6 +61,7 @@ public class Controller implements ActionListener, GUIInformation {
 
 	private int gridWith = Constants.MAP_WIDTH;
 	private int gridHeight = Constants.MAP_HEIGHT;
+	private boolean fromLevelCheckError = false;
 
 //	Added attributes
 	private String currMap = null;
@@ -72,8 +73,9 @@ public class Controller implements ActionListener, GUIInformation {
 		init(Constants.MAP_WIDTH, Constants.MAP_HEIGHT);
 	}
 
-	public Controller(String mapDir) {
+	public Controller(String mapDir, boolean fromLevelCheckError) {
 		this();
+		this.fromLevelCheckError = fromLevelCheckError;
 		startWithMap(mapDir);
 	}
 
@@ -214,7 +216,10 @@ public class Controller implements ActionListener, GUIInformation {
 				xmlOutput.setFormat(Format.getPrettyFormat());
 				xmlOutput
 						.output(doc, new FileWriter(chooser.getSelectedFile()));
-				doLevelCheck();
+
+				if (fromLevelCheckError == false) {
+					doLevelCheck();
+				}
 			}
 		} catch (FileNotFoundException e1) {
 			JOptionPane.showMessageDialog(null, "Invalid file!", "error",
@@ -293,7 +298,9 @@ public class Controller implements ActionListener, GUIInformation {
 						}
 					}
 					grid.redrawGrid();
-					doLevelCheck();
+					if (fromLevelCheckError == false) {
+						doLevelCheck();
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -374,7 +381,11 @@ public class Controller implements ActionListener, GUIInformation {
 					}
 				}
 				grid.redrawGrid();
-				doLevelCheck();
+
+				if (fromLevelCheckError == false) {
+					doLevelCheck();
+				}
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

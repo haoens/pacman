@@ -6,7 +6,7 @@ public class Main {
 	public static void main(String[] args) {
 		Controller controller;
 		if (args.length > 0) {
-			controller = new Controller(args[0]);
+			controller = new Controller(args[0], false);
 		}
 		else {
 			controller = new Controller();

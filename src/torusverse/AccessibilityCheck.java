@@ -1,6 +1,7 @@
 package torusverse;
 
 import ch.aplu.jgamegrid.Location;
+import src.Logger;
 import src.pathfinding.Grid;
 import src.pathfinding.Node;
 import src.pathfinding.PathFinding;
@@ -111,19 +112,10 @@ public class AccessibilityCheck implements LevelCheck {
                 inaccessible_gold.add(gold);
             }
         }
-        if (inaccessible_gold.size() > 0) {
-            List<String> inaccessible_locations = inaccessible_gold.stream().
-                    map(Object::toString).
-                    collect(Collectors.toList());
-            System.out.println("[Level " + filename + " - Gold not accessible: " +
-                    String.join("; ", inaccessible_locations) + "]");
-        }
-        if (inaccessible_pills.size() > 0) {
-            List<String> inaccessible_locations = inaccessible_pills.stream().
-                    map(Object::toString).
-                    collect(Collectors.toList());
-            System.out.println("[Level " + filename + " - Pill not accessible: " +
-                    String.join("; ", inaccessible_locations) + "]");
+
+        if (inaccessible_gold.size() > 0 || inaccessible_pills.size() > 0) {
+            Logger logger = Logger.getInstance();
+            logger.logGoldPillNotAccessible(inaccessible_gold, inaccessible_pills, filename);
         }
         return inaccessible_pills.size() == 0 && inaccessible_gold.size() == 0;
     }

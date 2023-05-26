@@ -1,5 +1,6 @@
 package torusverse;
 
+import src.Logger;
 import src.pathfinding.Node;
 
 import java.util.List;
@@ -18,7 +19,9 @@ public class MinPillAndGoldCheck implements LevelCheck {
     @Override
     public boolean doCheck() {
         if (goldLocations.size() + pillLocations.size() < 2) {
-            System.out.println("[Level " + filename + " - less than 2 Gold and Pill]");
+            //System.out.println("[Level " + filename + " - less than 2 Gold and Pill]");
+            Logger logger = Logger.getInstance();
+            logger.logAtLeastTwoGoldPill(filename);
             return false;
         }
         return true;

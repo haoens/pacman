@@ -16,13 +16,15 @@ public class PacManGameGrid
     private int nbHorzCells;
     private int nbVertCells;
     private ArrayList<int[][]> mazeArray =  new ArrayList<>();
+    private String filepath;
+    private File targetFile;
 
     public PacManGameGrid(int nbHorzCells, int nbVertCells, String filepath)
     {
         this.nbHorzCells = nbHorzCells;
         this.nbVertCells = nbVertCells;
-
-        File targetFile = new File(filepath);
+        this.filepath = filepath;
+        this.targetFile = new File(filepath);
 
         if (targetFile.isDirectory()) {
             // Do Game Check.
@@ -145,28 +147,36 @@ public class PacManGameGrid
 
     private boolean gameCheck(File[] gameFolder) {
 
+        Logger logger = Logger.getInstance();
 
         // Checks if at least one file in gameFolder.
-        if (!(gameFolder.length > 0)) {
-            System.out.println("no files");
+        if (gameFolder.length == 0) {
+            logger.logNoMap(filepath);
             return false;
         }
-        // Checks if all files start with a digit.
+
+        // Checks if there are more than two files with same digits.
+        Map<Integer, ArrayList<String>> fileMap = new HashMap<>();
         for (File file : gameFolder) {
-            if (!Character.isDigit(file.getName().charAt(0))) {
-                System.out.println("not starting with digit");
-                return false;
+            if (!fileMap.containsKey(getFileNumber(file))) {
+                fileMap.put(getFileNumber(file), new ArrayList<>());
+                fileMap.get(getFileNumber(file)).add(file.getName());
+            }
+            else {
+                fileMap.get(getFileNumber(file)).add(file.getName());
             }
         }
-        // Checks if there are more than two files with same digits.
-        HashSet<Integer> hashSet = new HashSet<>();
-        for (File file : gameFolder) {
-            if (hashSet.contains(getFileNumber(file))) {
-                System.out.println("duplicate digit present");
-                return false;
-            } else {
-                hashSet.add(getFileNumber(file));
+        ArrayList<String> dupNumLevels = new ArrayList<>();
+        for (ArrayList<String> fileNames: fileMap.values()) {
+            if (fileNames.size() > 1) {
+                for (int i = 0; i < fileNames.size(); i++) {
+                    dupNumLevels.add(fileNames.get(i));
+                }
             }
+        }
+        if (dupNumLevels.size() > 0) {
+            logger.logDupFileNumbers(dupNumLevels, filepath);
+            return false;
         }
         return true;
     }
@@ -200,6 +210,9 @@ public class PacManGameGrid
             }
         }
         return count;
+    }
+    public String getLevelName(int level) {
+        return sortGameFolder(getGameFolderContent(targetFile)).get(level).getName();
     }
 
 }
