@@ -106,6 +106,8 @@ public class Game extends GameGrid
       boolean hasPacmanEatAllPills;
       setupPillAndItemsLocations();
       int maxPillsAndItems = countPillsAndItems();
+      ClosestPillStrategy closestPillStrategy = new ClosestPillStrategy();
+      pacActor.setAutoPlayStrategy(closestPillStrategy);
       pacActor.getItemLocations();
 
       do {

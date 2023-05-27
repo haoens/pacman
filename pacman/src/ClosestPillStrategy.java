@@ -44,6 +44,7 @@ public class ClosestPillStrategy implements AutoPlayStrategy{
                 shortestPath = itemPath.size();
             }
         }
+        itemPaths.clear();
         return currentPath;
     }
 }

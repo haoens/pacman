@@ -96,7 +96,6 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private void moveInAutoMode() {
     if(currentPath == null || currentPath.size() == 0) {
       // Strategy would be determined based on game information for an extended autoplayer
-      autoPlayStrategy = new ClosestPillStrategy();
       currentPath = autoPlayStrategy.getPath(game);
     }
     Location next = currentPath.remove(0);
