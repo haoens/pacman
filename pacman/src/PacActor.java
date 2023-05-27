@@ -23,6 +23,7 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private List<Location> itemLocations;
   private List<Location> currentPath;
   private int seed;
+  private AutoPlayStrategy autoPlayStrategy;
   private boolean isAuto = false;
   private Random randomiser = new Random();
   public PacActor(Game game)
@@ -96,42 +97,16 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   }
 
   private void moveInAutoMode() {
-    if(itemPaths.isEmpty()) {
-      for(Location itemLocation : itemLocations) {
-        if(game.grid.getCell(itemLocation, game.getCurrentLevel()) == 4) {
-          continue;
-        }
-        if(itemLocation.equals(this.getLocation())) {
-          continue;
-        }
-        if((itemLocation.x == this.getLocation().getX() || itemLocation.y == this.getLocation().getY())
-            && itemLocation.getDistanceTo(this.getLocation()) == 1){
-          List<Location> itemPath = new ArrayList<>();
-          itemPath.add(itemLocation);
-          itemPaths.add(itemPath);
-          break;
-        }
-        ArrayList<GamePortal> portals = game.getPortals();
-        HashMap<Location, Location> portalLocations = new HashMap<>();
-        for(GamePortal portal : portals){
-          portalLocations.put(portal.getLocation(), portal.getPairedPortal().getLocation());
-        }
-        itemPaths.add(PathFinding.findPath(game.getPathFinderGrid(), this.getLocation(), itemLocation, false, portalLocations));
-      }
-      int shortestPath = 9000;
-      for(List<Location> itemPath : itemPaths) {
-        if(itemPath.size() < shortestPath){
-          currentPath = itemPath;
-          shortestPath = itemPath.size();
-        }
-      }
+    if(currentPath == null || currentPath.size() == 0) {
+      // Strategy would be determined based on game information for an extended autoplayer
+      autoPlayStrategy = new ClosestPillStrategy(game, this.getLocation(), itemLocations);
+      currentPath = autoPlayStrategy.getPath();
     }
     Location next = currentPath.remove(0);
     setDirection(this.getLocation().get4CompassDirectionTo(next));
     setLocation(next);
     eatPill(next);
     if(currentPath.size() == 0) {
-      itemPaths.clear();
       for(Location itemLocation : itemLocations){
         if(itemLocation.equals(next)) {
           itemLocations.remove(itemLocation);
