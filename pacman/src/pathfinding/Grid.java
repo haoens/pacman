@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class Grid {
     public Node[][] nodes;
-    int gridWidth, gridHeight;
+    private int gridWidth, gridHeight;
 
     /**
      * Modified from https://github.com/patrykkrawczyk/2D-A-path-finding-in-Java/

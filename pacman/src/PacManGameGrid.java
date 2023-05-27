@@ -12,7 +12,7 @@ public class PacManGameGrid
     private final String filepath;
     private final File targetFile;
     private boolean failedGameCheck = false;
-    private final GameFolderController gameFolderController = new GameFolderController(this);
+    private final GameFolderController gameFolderController = new GameFolderController();
 
     public PacManGameGrid(int nbHorzCells, int nbVertCells, String filepath)
     {
@@ -25,7 +25,7 @@ public class PacManGameGrid
             // Do Game Check.
             if (gameCheck(gameFolderController.getGameFolderContent(targetFile))) {
                 // Pass game check load xml to maze array
-                mazeArray = gameFolderController.getMazeArray(targetFile);
+                mazeArray = gameFolderController.getMazeArray(targetFile, this);
             }
             else {
                 failedGameCheck = true;
@@ -34,7 +34,7 @@ public class PacManGameGrid
         else {
             ArrayList<File> maze = new ArrayList<>();
             maze.add(targetFile);
-            mazeArray = gameFolderController.xmlToMazeArray(maze);
+            mazeArray = gameFolderController.xmlToMazeArray(maze, this);
         }
     }
     public int getCell(Location location, int level)

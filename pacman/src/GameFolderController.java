@@ -14,9 +14,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class GameFolderController {
-    private PacManGameGrid grid;
-    public GameFolderController(PacManGameGrid grid) {
-        this.grid = grid;
+    public GameFolderController() {
     }
 
     // Get the files in gameFolder into an File array.
@@ -45,7 +43,7 @@ public class GameFolderController {
     }
 
     // Turns a XML file into mazeArray.
-    public ArrayList<int[][]> xmlToMazeArray(ArrayList<File> gameFolder) {
+    public ArrayList<int[][]> xmlToMazeArray(ArrayList<File> gameFolder, PacManGameGrid grid) {
         ArrayList<int[][]> mazeArray = new ArrayList<>();
         try {
             for (File file : gameFolder) {
@@ -104,8 +102,8 @@ public class GameFolderController {
     }
 
     // Returns a maze array.
-    public ArrayList<int[][]> getMazeArray(File targetFile) {
-        return xmlToMazeArray(sortGameFolder(getGameFolderContent(targetFile)));
+    public ArrayList<int[][]> getMazeArray(File targetFile, PacManGameGrid grid) {
+        return xmlToMazeArray(sortGameFolder(getGameFolderContent(targetFile)), grid);
     }
 
     // Returns the nth File in sorted array.
