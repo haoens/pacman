@@ -215,7 +215,7 @@ public class Controller implements ActionListener, GUIInformation {
 				xmlOutput.setFormat(Format.getPrettyFormat());
 				xmlOutput.output(doc, new FileWriter(chooser.getSelectedFile()));
 
-				currMap = chooser.getSelectedFile().getName();
+				currMap = chooser.getSelectedFile().getPath();
 				doLevelCheck();
 
 
