@@ -8,18 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ClosestPillStrategy implements AutoPlayStrategy{
-    private Game game;
-    private Location startPos;
-    private List<Location> itemLocations;
     private ArrayList<List<Location>> itemPaths = new ArrayList<>();
     private List<Location> currentPath;
-    public ClosestPillStrategy(Game game, Location startPos, List<Location> itemLocations) {
-        this.game = game;
-        this.startPos = startPos;
-        this.itemLocations = itemLocations;
+    public ClosestPillStrategy() {
     }
     @Override
-    public List<Location> getPath() {
+    public List<Location> getPath(Game game) {
+        Location startPos = game.pacActor.getLocation();
+        List<Location> itemLocations = game.getPillAndItemLocations();
         for (Location itemLocation : itemLocations) {
             if (game.grid.getCell(itemLocation, game.getCurrentLevel()) == 4) {
                 continue;

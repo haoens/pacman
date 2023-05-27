@@ -3,12 +3,10 @@
 package src;
 
 import ch.aplu.jgamegrid.*;
-import src.pathfinding.PathFinding;
 
 import java.awt.event.KeyEvent;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -19,7 +17,6 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private int nbPills = 0;
   private int score = 0;
   private Game game;
-  private ArrayList<List<Location>> itemPaths = new ArrayList<>();
   private List<Location> itemLocations;
   private List<Location> currentPath;
   private int seed;
@@ -99,8 +96,8 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   private void moveInAutoMode() {
     if(currentPath == null || currentPath.size() == 0) {
       // Strategy would be determined based on game information for an extended autoplayer
-      autoPlayStrategy = new ClosestPillStrategy(game, this.getLocation(), itemLocations);
-      currentPath = autoPlayStrategy.getPath();
+      autoPlayStrategy = new ClosestPillStrategy();
+      currentPath = autoPlayStrategy.getPath(game);
     }
     Location next = currentPath.remove(0);
     setDirection(this.getLocation().get4CompassDirectionTo(next));
@@ -153,6 +150,10 @@ public class PacActor extends Actor implements GGKeyRepeatListener
   }
   public void getItemLocations() {
     this.itemLocations = game.getPillAndItemLocations();
+  }
+
+  public void setAutoPlayStrategy(AutoPlayStrategy strategy) {
+    this.autoPlayStrategy = strategy;
   }
 }
 
